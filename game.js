@@ -18,6 +18,7 @@ const gDefaults = {
   quests: {},
   questsClaimed: [],
   seen: [],            // cutscene + lesson node ids
+  purchased: [],       // premium chapter ids (prototype — no real payment)
 };
 
 let G = loadGame();
@@ -51,17 +52,23 @@ function chapterState(id) {
   if (!ch) return null;
   const done = ch.dishes.filter((d) => G.cooked.includes(d));
   const prev = idx > 0 ? CHAPTERS[idx - 1] : null;
-  const unlocked = idx === 0 || (prev && prev.dishes.every((d) => G.cooked.includes(d)));
+  const owned = G.purchased.includes(ch.id);
+  /* A paid chapter is gated by the purchase, not by progress — the whole
+     point is that it's available the moment someone wants it. */
+  const unlocked = ch.premium ? owned : (idx === 0 || (prev && prev.dishes.every((d) => G.cooked.includes(d))));
   return {
     ...ch, index: idx, done: done.length, total: ch.dishes.length,
     cleared: done.length === ch.dishes.length,
     unlocked: Boolean(unlocked),
-    needs: prev ? `Clear ${prev.country} first` : "",
+    owned,
+    needs: ch.premium ? `${ch.price} · Chef's Table` : prev ? `Clear ${prev.country} first` : "",
   };
 }
 const allChapters = () => CHAPTERS.map((c) => chapterState(c.id));
 const currentChapter = () =>
-  allChapters().find((c) => c.unlocked && !c.cleared) || allChapters().filter((c) => c.unlocked).pop();
+  allChapters().find((c) => c.unlocked && !c.cleared && !c.premium)
+  || allChapters().find((c) => c.unlocked && !c.cleared)
+  || allChapters().filter((c) => c.unlocked).pop();
 
 
 /* ---------------- the stage path ----------------
@@ -267,6 +274,16 @@ const Game = {
   rated() { touchStreak(); bumpQuests("rate"); unlock("rate-one"); return award(XP.rate, "Rated a dish"); },
 
   achievements() { return ACHIEVEMENTS.map((a) => ({ ...a, owned: G.achievements.includes(a.id) })); },
+
+  /** Prototype only — this does not take money. It flips a local flag so
+      the paid flow can be demoed end to end. */
+  purchase(chapterId) {
+    const ch = CHAPTERS.find((c) => c.id === chapterId);
+    if (!ch || !ch.premium || G.purchased.includes(chapterId)) return null;
+    G.purchased.push(chapterId);
+    saveGame();
+    return award(0, `${ch.country} unlocked`);
+  },
 
   reset() { G = JSON.parse(JSON.stringify(gDefaults)); saveGame(); },
 };

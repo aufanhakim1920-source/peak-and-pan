@@ -100,7 +100,19 @@
   <script src="speech.js"></script>
   <script src="ai.js"></script>
   <script src="app.js"></script>
-  <script src="app-v2.js"></script>
+  <!-- one file per page, so two people can work on different screens
+       without touching the same file. Order matters: ui.js first, the
+       screens in any order, main.js last (it boots the router). -->
+  <script src="ui.js"></script>
+  <script src="screens/intro.js"></script>
+  <script src="screens/stage.js"></script>
+  <script src="screens/globe.js"></script>
+  <script src="screens/dish.js"></script>
+  <script src="screens/browse.js"></script>
+  <script src="screens/progress.js"></script>
+  <script src="screens/profile.js"></script>
+  <script src="screens/chat.js"></script>
+  <script src="main.js"></script>
   <script type="module">
     import { mountPlanet } from "./planet.js";
     window.mountPlanet = mountPlanet;

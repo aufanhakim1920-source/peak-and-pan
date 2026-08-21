@@ -68,46 +68,54 @@ const GLORB_LINES = {
    journey: home first, then outward. */
 const CHAPTERS = [
   {
-    id: "id", code: "ID", costume: "🥥", country: "Indonesia", city: "Surabaya", lat: -7.25, lng: 112.75,
+    id: "id", c1: "#7A2E2A", c2: "#2B1220", ink: "#F2B441", code: "ID", costume: "🥥", country: "Indonesia", city: "Surabaya", lat: -7.25, lng: 112.75,
     color: 0xE8543A, flag: "🇮🇩",
     open: "He lands in the kitchen doorway while the oil is still hot.",
     intro: "You were making Fried Glorb. He is a Glorb. Nobody mentions it.",
     dishes: ["nasi-goreng", "sate-ayam", "rendang"],
   },
   {
-    id: "jp", code: "JP", costume: "🍥", country: "Japan", city: "Osaka", lat: 34.69, lng: 135.50,
+    id: "jp", c1: "#6E2036", c2: "#20101C", ink: "#F3D9E0", code: "JP", costume: "🍥", country: "Japan", city: "Osaka", lat: 34.69, lng: 135.50,
     color: 0xD94A6A, flag: "🇯🇵",
     open: "He has heard there is a country that takes rice seriously.",
     intro: "Fewer ingredients, more attention. He finds this suspicious at first.",
     dishes: ["onigiri", "miso-soup", "katsu-curry"],
   },
   {
-    id: "it", code: "IT", costume: "🍕", country: "Italy", city: "Naples", lat: 40.85, lng: 14.27,
+    id: "it", c1: "#245C3E", c2: "#0F2419", ink: "#F2E2B8", code: "IT", costume: "🍕", country: "Italy", city: "Naples", lat: 40.85, lng: 14.27,
     color: 0x5FBF8A, flag: "🇮🇹",
     open: "Somebody told him about a flat bread with cheese on it.",
     intro: "He learns that four ingredients done properly beats fourteen done badly.",
     dishes: ["aglio-e-olio", "margherita", "carbonara"],
   },
   {
-    id: "mx", code: "MX", costume: "🌮", country: "Mexico", city: "Oaxaca", lat: 17.07, lng: -96.72,
+    id: "mx", c1: "#8A4A12", c2: "#2A1408", ink: "#F7C948", code: "MX", costume: "🌮", country: "Mexico", city: "Oaxaca", lat: 17.07, lng: -96.72,
     color: 0xE8A33A, flag: "🇲🇽",
     open: "He arrives already complaining about the flight.",
     intro: "Heat that builds instead of hits. He respects the patience in it.",
     dishes: ["guacamole", "elote", "tacos-al-pastor"],
   },
   {
-    id: "in", code: "IN", costume: "🍛", country: "India", city: "Kochi", lat: 9.93, lng: 76.27,
+    id: "in", c1: "#4A2C6B", c2: "#190E28", ink: "#F0B84E", code: "IN", costume: "🍛", country: "India", city: "Kochi", lat: 9.93, lng: 76.27,
     color: 0x8E6FB8, flag: "🇮🇳",
     open: "He wants to know why everything here smells like a decision.",
     intro: "Spice as structure, not as a dare. This is where he stops rushing you.",
     dishes: ["dal-tadka", "chana-masala", "butter-chicken"],
   },
   {
-    id: "au", code: "AU", costume: "☕", country: "Australia", city: "Melbourne", lat: -37.81, lng: 144.96,
+    id: "au", c1: "#1E4A6B", c2: "#0C1C2A", ink: "#EFD9A8", code: "AU", costume: "☕", country: "Australia", city: "Melbourne", lat: -37.81, lng: 144.96,
     color: 0x57A8E0, flag: "🇦🇺",
     open: "Your turn to pick. He follows you home.",
     intro: "The last one is the one you actually live in.",
     dishes: ["parma", "lamingtons", "flat-white"],
+  },
+  {
+    id: "fr", c1: "#3B2B6B", c2: "#140E28", ink: "#E4C86A",
+    code: "FR", costume: "🥖", country: "France", city: "Lyon", lat: 45.76, lng: 4.84,
+    color: 0x6C5CE0, flag: "🇫🇷", premium: true, price: "$4.99",
+    open: "He has heard there is a country that argues about butter.",
+    intro: "The chef's table. Three techniques that make everything else easier.",
+    dishes: ["soupe-oignon", "ratatouille", "tarte-tatin"],
   },
 ];
 
@@ -127,6 +135,9 @@ const PANTRY = [
   { id: "maize",     name: "Maize",          icon: "corn",    color: "#E8C24A", where: "mx", diet: "veg", tell: "Husk still tight, silk still pale." },
   { id: "cumin",     name: "Cumin",          icon: "seed",    color: "#8A5A2B", where: "in", diet: "veg", tell: "Toast whole, then grind. Not the other way round." },
   { id: "lentil",    name: "Toor Dal",       icon: "grain",   color: "#D9A441", where: "in", diet: "veg", tell: "Rinse until the water runs clear." },
+  { id: "beurre",    name: "Beurre",         icon: "drop",    color: "#F0D98A", where: "fr", diet: "veg", tell: "Unsalted, and more of it than feels reasonable." },
+  { id: "thyme",     name: "Thyme",          icon: "seed",    color: "#6E8F4A", where: "fr", diet: "veg", tell: "Strip the leaves backwards down the stem." },
+  { id: "apple",     name: "Apple",          icon: "tomato",  color: "#C4423C", where: "fr", diet: "veg", tell: "Firm enough to hold its shape in caramel." },
   { id: "ghee",      name: "Ghee",           icon: "drop",    color: "#E8C87A", where: "in", diet: "veg", tell: "Nutty, not greasy. It should smell toasted." },
 ];
 
@@ -369,7 +380,47 @@ const DISHES = [
       { t: "Tap, swirl, pour close to the surface." },
     ],
   },
+
+  {
+    id: "soupe-oignon", name: "Soupe à l'Oignon", chapter: "fr", diet: "meat",
+    prep: "10m", cook: "1hr 20m", difficulty: 3, serves: 4,
+    learn: "Caramelising, properly", needs: ["beurre", "thyme"],
+    blurb: "Forty minutes of onions before anything else happens.",
+    glorb: "You stirred for forty minutes and made me cry. Worth it.",
+    steps: [
+      { t: "Slice the onions thin and even. Uneven slices burn before the rest colour.", hint: "This is the only knife work that matters here" },
+      { t: "Butter, low heat, lid on for fifteen minutes to sweat them down." },
+      { t: "Lid off, forty more minutes, stirring often, until they are deep brown.", hint: "Twenty minutes is not caramelised. It is just cooked" },
+      { t: "Deglaze, add stock and thyme, simmer twenty minutes." },
+    ],
+  },
+  {
+    id: "ratatouille", name: "Ratatouille", chapter: "fr", diet: "veg",
+    prep: "25m", cook: "50m", difficulty: 3, serves: 4,
+    learn: "Cook them separately", needs: ["thyme", "beurre"],
+    blurb: "Every vegetable cooked on its own, then introduced.",
+    glorb: "Five pans. FIVE. And yet.",
+    steps: [
+      { t: "Cook each vegetable separately until it is good on its own.", hint: "All in one pan and everything steams into mush" },
+      { t: "Aubergine takes the most oil and the most time. Start there." },
+      { t: "Combine only at the end, with thyme, and warm through." },
+    ],
+  },
+  {
+    id: "tarte-tatin", name: "Tarte Tatin", chapter: "fr", diet: "veg",
+    prep: "20m", cook: "45m", difficulty: 5, serves: 6,
+    learn: "Caramel without fear", needs: ["apple", "beurre"],
+    blurb: "Upside down, and it either releases cleanly or it does not.",
+    glorb: "You flipped it. In front of me. Absolute nerve.",
+    steps: [
+      { t: "Sugar and butter in the pan until it goes amber — not blond, not brown.", hint: "Amber is about fifteen seconds wide. Watch it, don't stir it" },
+      { t: "Apples packed tight, cut side up, straight into the caramel." },
+      { t: "Pastry over the top, tucked down the sides, then bake." },
+      { t: "Rest five minutes, then flip in one movement. Hesitating is what breaks it." },
+    ],
+  },
 ];
+
 
 /* deterministic pick so the same state always shows the same line */
 function glorbLine(mood, seed) {

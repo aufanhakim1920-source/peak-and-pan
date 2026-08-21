@@ -240,3 +240,61 @@
   text-shadow: none;
 }
 :root[data-theme="light"] .snode__t { background: rgba(87, 52, 81, 0.82); color: #F3F2EC; }
+
+/* ═══════════ per-country scene ═══════════
+   Every chapter gets its own ground instead of the same purple: a
+   two-stop gradient in the country's colours, its own pattern tiled
+   over it, a warm glow behind the path, and grain to stop the
+   gradient banding. */
+.stagewrap { position: relative; min-height: 100%; }
+.scene { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0;
+  background: linear-gradient(170deg, var(--c1) 0%, var(--c2) 62%); }
+.scene__pat {
+  position: absolute; inset: -10%;
+  background-repeat: repeat; background-size: 88px;
+  opacity: 0.16; color: var(--cink);
+  filter: brightness(0) saturate(100%) invert(88%) sepia(38%) saturate(600%) hue-rotate(340deg);
+  mix-blend-mode: soft-light;
+}
+.scene__glow { position: absolute; inset: 0;
+  background: radial-gradient(70% 42% at 50% 26%, color-mix(in srgb, var(--cink) 26%, transparent), transparent 70%); }
+.scene__grain {
+  position: absolute; inset: 0; opacity: 0.05; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.stagewrap .hud, .stagewrap .stagehead, .stagewrap .stagemap { position: relative; z-index: 2; }
+.stagehead__pick { background: rgba(0, 0, 0, 0.3); border-color: rgba(255, 255, 255, 0.22); }
+
+/* contrast: these were washed out on the dark scene */
+.stagehead__pick i { opacity: 0.92; }
+.hud__lbl { opacity: 1; }
+.globe-top p, .stagehead__pick i { color: rgba(255, 255, 255, 0.88); }
+.snode__t { opacity: 1; color: #fff; font-size: 10.5px; }
+
+/* ═══════════ paywall ═══════════ */
+.paywall { text-align: center; }
+.paywall__kick {
+  display: inline-block; font-family: var(--display); font-size: 10.5px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  background: linear-gradient(100deg, #E4C86A, #B98B2E); color: #2A1E06;
+  padding: 5px 14px; border-radius: 999px;
+}
+.paywall h3 { font-family: var(--display); font-size: 27px; color: var(--secondary); }
+.paywall__blurb { font-size: 13.5px; color: var(--primary); margin: 4px 0 16px; }
+.paywall__list { list-style: none; text-align: left; margin-bottom: 16px; }
+.paywall__list li {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--line);
+}
+.paywall__list b { font-family: var(--display); font-size: 15px; font-weight: 500; color: var(--secondary); }
+.paywall__list span { font-size: 11.5px; color: var(--primary); }
+.paywall__price { margin-bottom: 14px; }
+.paywall__price b { display: block; font-family: var(--display); font-size: 34px; color: var(--secondary); line-height: 1; }
+.paywall__price span { font-size: 11.5px; color: var(--primary); }
+.paywall__buy { background: linear-gradient(100deg, #E4C86A, #B98B2E); color: #2A1E06; }
+.paywall__note {
+  font-size: 10.5px; line-height: 1.5; color: var(--primary);
+  margin-top: 12px; padding: 9px 11px; border-radius: 9px;
+  background: var(--line);
+}
+.gchip.is-locked { opacity: 0.55; }

@@ -71,6 +71,34 @@ You pointed me at `kevicebryan/pokemu` for the audio description, and it gave me
 - **The narrator** (`CollectionView.tsx`) — voice picking, a fixed rate/pitch profile, and the `voiceschanged` race where `getVoices()` is empty on first call so your first utterance silently uses the wrong voice.
 - **The globe** (`Atlas/GlobeCanvas.tsx`) — the lat/lng → sphere maths, marker model and timezone opening rotation. Written up in the vault as a reusable pattern.
 
+
+## Working on this together
+
+**One file per page.** Two people can edit different screens without touching the same file.
+
+```
+ui.js                shared: theme, HUD, Glorb, icons, card/row shapes
+screens/intro.js     the arrival cutscene
+screens/stage.js     main mission — the tentacle stage map
+screens/globe.js     the 3D Earth + country sheet + Chef's Table paywall
+screens/dish.js      a recipe, its ingredients, ratings, photos, cook-along
+screens/browse.js    search + the ingredient pages
+screens/progress.js  daily orders, titles, medals
+screens/profile.js   the bookshelf (every book is a settings section)
+screens/chat.js      the cook assistant
+main.js              router, click handlers, boot — the only file that knows about all of them
+```
+
+Load order in `index.html` matters: **`ui.js` first, the screens in any order, `main.js` last.** Adding a screen is: write `screens/yours.js` defining `screens.yourname = () => ({ nav, html })`, add one `<script>` line, done.
+
+Content lives apart from code — `story.js` (countries, dishes, Glorb's lines), `world.js` (levels, quests, medals). You can add a country or a dish without opening a screen file.
+
+## Money
+
+There's a **Chef's Table** chapter — France, `$4.99`, three technique dishes. It appears on the globe with a ★ and opens a paywall.
+
+⚠️ **The button takes no money and talks to no payment provider.** It flips a local flag so the flow can be demoed end to end. Wiring a real provider is a separate job and should not go in a prototype.
+
 ## Files
 
 ```
