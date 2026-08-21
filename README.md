@@ -73,6 +73,43 @@ You pointed me at `kevicebryan/pokemu` for the audio description, and it gave me
 
 
 
+## The database is live
+
+Supabase project **`peak-and-pan`** (Sydney, free tier). Ratings, photos, replies and the artwork index are real — not local storage.
+
+**You need `config.local.js` to reach it.** It is gitignored, so a fresh clone runs on the local driver and everything still works; ask Aufan for the file. The key in it is the **publishable** key, which is designed to sit in a browser and is safe to send over chat. The **service_role** key is not, and belongs nowhere in this repo.
+
+### Pictures are not embedded
+
+Two buckets:
+
+| Bucket | What | Who can write |
+|---|---|---|
+| `content` | Official artwork — kecap, nasi goreng, country art | Nobody from the browser. Upload with the tool below |
+| `dish-photos` | Photos players take of their own cooking | Anyone, from the app |
+
+A `media` table maps `kind + key` to a public URL, so the app looks up
+`ingredient/kecap` or `dish/nasi-goreng` and uses the picture **if one exists**.
+No row means it falls back to the drawn icon — so the app is never broken by
+missing art, and art can be added or changed without a deploy.
+
+To add pictures, name the file after the id in `story.js`:
+
+```
+media/ingredient/kecap.jpg
+media/dish/nasi-goreng.jpg
+media/country/id.jpg
+```
+
+then:
+
+```bash
+SUPABASE_URL=https://emqolbwgormmlsiewgix.supabase.co SUPABASE_SERVICE_KEY=<from the dashboard> node tools/upload-media.mjs ./media
+```
+
+The service key is read from the environment and never written to disk. Reload
+the app and the pictures replace the drawn fallbacks.
+
 ## Secrets — read this before you commit
 
 **Nothing in this repo is a secret, and it needs to stay that way.**

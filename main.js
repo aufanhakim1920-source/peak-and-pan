@@ -324,3 +324,7 @@ if (!location.hash || location.hash === "#/") {
 }
 route();
 afterRoute();
+
+/* pull the artwork index, then repaint once so pictures replace the
+   drawn fallbacks without blocking first paint */
+DB.loadMedia().then((m) => { if (Object.keys(m).length) { route(); afterRoute(); } });

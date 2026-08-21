@@ -86,8 +86,12 @@ function sb(path, opts = {}) {
       ...(opts.headers || {}),
     },
   }).then(async (r) => {
-    if (!r.ok) throw new Error(`supabase ${r.status}: ${await r.text()}`);
-    return r.status === 204 ? null : r.json();
+    const text = await r.text();
+    if (!r.ok) throw new Error(`supabase ${r.status}: ${text}`);
+    /* `Prefer: return=minimal` answers 201 with an EMPTY body, and
+       r.json() throws on empty input — which made every write look like
+       a failure and silently fall back to the local driver. */
+    return text ? JSON.parse(text) : null;
   });
 }
 
@@ -150,9 +154,33 @@ const supabaseDriver = {
   },
 };
 
+/* ---------------- official artwork ----------------
+   One fetch on boot, cached. Dish and ingredient pictures live in the
+   `content` Storage bucket; this table just maps kind+key -> its URL,
+   so nothing is embedded in the app and art can change without a
+   deploy. Missing rows are normal — the drawn fallback takes over. */
+let MEDIA = {};
+
+async function loadMedia(live) {
+  if (!live) return {};
+  try {
+    const rows = await sb("media?select=kind,key,url");
+    MEDIA = Object.fromEntries(rows.map((r) => [`${r.kind}/${r.key}`, r.url]));
+  } catch (err) {
+    console.warn("[db] media index unavailable, using drawn fallbacks", err);
+    MEDIA = {};
+  }
+  return MEDIA;
+}
+
+/** URL for a piece of official art, or "" if none is uploaded yet. */
+function mediaUrl(kind, key) { return MEDIA[`${kind}/${key}`] || ""; }
+
 /* ---------------- the interface the app actually calls ---------------- */
 const DB = (() => {
-  const live = PP_CONFIG.driver === "supabase" && PP_CONFIG.url && PP_CONFIG.anonKey;
+  /* Boolean(), not the && chain: that returns the KEY as a truthy value,
+     so anything printing DB.isLive would print the credential. */
+  const live = Boolean(PP_CONFIG.driver === "supabase" && PP_CONFIG.url && PP_CONFIG.anonKey);
   const driver = live ? supabaseDriver : localDriver;
 
   /* a live database can be down; the app must not be. Every call falls
@@ -175,5 +203,7 @@ const DB = (() => {
     addPhoto: guard("addPhoto"),
     replies: guard("replies"),
     addReply: guard("addReply"),
+    media: mediaUrl,
+    loadMedia: () => loadMedia(live),
   };
 })();

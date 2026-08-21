@@ -104,6 +104,9 @@ function hud() {
    INGREDIENT ART
    ═══════════════════════════════════════════════════════════ */
 function ingIcon(p, size = 44) {
+  /* a real photograph beats a drawn glyph when one has been uploaded */
+  const shot = DB.media("ingredient", p.id);
+  if (shot) return `<img class="mat__ico mat__ico--photo" src="${shot}" alt="" width="${size}" height="${size}" loading="lazy">`;
   const c = p.color;
   const art = {
     grain:  `<ellipse cx="16" cy="26" rx="5" ry="10" fill="${c}" transform="rotate(-18 16 26)"/><ellipse cx="24" cy="22" rx="5" ry="10" fill="${c}" transform="rotate(12 24 22)"/><ellipse cx="30" cy="29" rx="4.4" ry="9" fill="${c}" transform="rotate(-6 30 29)"/>`,
