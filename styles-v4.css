@@ -1,0 +1,120 @@
+/* ═══════════════════════════════════════════════════════════
+   Peak & Pan — collectible recipe cards
+   A dish is a thing you own, so it looks like a card you own.
+   Three nested layers so no two systems ever write the same
+   transform: .fcard (perspective) → .fcard__tilt (pointer) →
+   .fcard__face (the artwork).
+   ═══════════════════════════════════════════════════════════ */
+
+.fgrid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 14px; margin-bottom: 22px;
+}
+
+.fcard {
+  aspect-ratio: 63 / 88;
+  perspective: 1000px;
+  cursor: pointer;
+}
+.fcard__tilt {
+  position: relative; width: 100%; height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.38s ease-out;
+}
+.fcard__face {
+  position: absolute; inset: 0;
+  border-radius: 16px; overflow: hidden;
+  background: linear-gradient(165deg,
+    color-mix(in srgb, var(--fc) 88%, #000) 0%,
+    color-mix(in srgb, var(--fc) 42%, #100b16) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.34);
+  color: #fff;
+  display: flex; flex-direction: column;
+  padding: 11px 12px 13px;
+  isolation: isolate;
+}
+.fcard__pat {
+  position: absolute; inset: -20%;
+  background-repeat: repeat; background-size: 70px;
+  opacity: 0.2; color: var(--fink);
+  mix-blend-mode: soft-light;
+}
+.fcard__face > * { position: relative; z-index: 2; }
+
+.fcard__top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.fcard__diff { font-size: 9px; letter-spacing: 0.5px; color: var(--fink); opacity: 0.9; }
+.fcard__art { flex: 1; display: grid; place-items: center; font-size: 44px; filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4)); }
+.fcard__name {
+  font-family: var(--display); font-weight: 600; font-size: 16px;
+  line-height: 1.05; letter-spacing: -0.02em;
+}
+.fcard__learn {
+  font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--fink); opacity: 0.82; margin-top: 4px;
+}
+.fcard__seal {
+  position: absolute; top: 38%; left: 50%; z-index: 3;
+  translate: -50% 0; rotate: -14deg;
+  font-family: var(--display); font-size: 13px; letter-spacing: 0.2em;
+  color: #F9E95A; border: 2.5px solid #F9E95A; border-radius: 6px;
+  padding: 3px 10px; opacity: 0.85;
+}
+.fcard.is-cooked .fcard__face { border-color: rgba(249, 233, 90, 0.55); }
+
+/* ---- the foil, driven by the same pointer position as the tilt ---- */
+.fcard .foil, .fcard .glare {
+  position: absolute; inset: 0; z-index: 4;
+  border-radius: inherit; pointer-events: none;
+  opacity: 0; transition: opacity 0.28s ease;
+}
+/* wide transparent gaps between the bands, or the sheen eats the card's
+   own colour and every dish looks identical */
+.fcard .foil {
+  background: repeating-linear-gradient(112deg,
+    transparent 0%, transparent 7%,
+    rgba(255, 255, 255, 0.30) 9%,
+    rgba(255, 62, 160, 0.42) 12%,
+    rgba(255, 214, 61, 0.42) 15%,
+    rgba(64, 255, 199, 0.42) 18%,
+    rgba(86, 118, 255, 0.42) 21%,
+    transparent 24%, transparent 32%);
+  background-size: 300% 300%;
+  background-position: var(--fx, 50%) var(--fy, 50%);
+  mix-blend-mode: color-dodge;
+}
+.fcard .glare {
+  background: radial-gradient(circle 200px at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.45), transparent 70%);
+  mix-blend-mode: overlay;
+}
+.fcard__face.is-lit .foil { opacity: 0.34; }
+.fcard__face.is-lit .glare { opacity: 1; }
+
+/* ---- the big one on the dish screen ---- */
+.dhero {
+  position: relative; overflow: hidden;
+  padding: 74px 20px 26px;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  background: linear-gradient(170deg, var(--c1) 0%, var(--c2) 78%);
+}
+.dhero__pat {
+  position: absolute; inset: -10%;
+  background-repeat: repeat; background-size: 86px;
+  opacity: 0.14; mix-blend-mode: soft-light;
+}
+.dhero__glow {
+  position: absolute; inset: 0;
+  background: radial-gradient(60% 44% at 50% 34%, color-mix(in srgb, var(--fc) 42%, transparent), transparent 72%);
+}
+.dhero > .fcard, .dhero__meta { position: relative; z-index: 2; }
+.fcard--big { width: min(212px, 58%); }
+.fcard--big .fcard__art { font-size: 62px; }
+.fcard--big .fcard__name { font-size: 21px; }
+.dhero__meta { font-size: 11.5px; color: rgba(255, 255, 255, 0.82); letter-spacing: 0.04em; }
+
+@media (max-width: 380px) { .fgrid { gap: 11px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .fcard__tilt { transition: none; }
+  .fcard .foil, .fcard .glare { display: none; }
+}

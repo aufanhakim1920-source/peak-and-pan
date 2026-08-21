@@ -13,13 +13,11 @@ screens.dish = function dish(id) {
   const cooked = Game.state.cooked.includes(d.id);
   const mood = Game.mood();
   return { nav: false, html:
-    `<div class="hero hero--dish" style="--fc:#${(c?.color || 0x573451).toString(16).padStart(6, "0")}">
-       <span class="hero__flag">${c ? flagOf(c) : "🍽"}</span>
-       <div class="hero__scrim"></div>
-       <div class="hero__title">
-         <h2>${esc(d.name)}</h2>
-         <p>${esc(c?.country || "")} · serves ${d.serves} · ${d.prep} prep · ${d.cook} cook</p>
-       </div>
+    `<div class="dhero" style="--fc:#${((c && c.color) || 0x573451).toString(16).padStart(6, "0")};--c1:${(c && c.c1) || "#2A1B29"};--c2:${(c && c.c2) || "#150F1E"}">
+       <span class="dhero__pat" style="background-image:url(assets/patterns/${d.chapter}.svg)"></span>
+       <span class="dhero__glow"></span>
+       ${foilCard(d, { big: true })}
+       <span class="dhero__meta">${esc((c && c.country) || "")} · serves ${d.serves} · ${d.prep} prep · ${d.cook} cook</span>
      </div>
      ${backbar("", false, true)}
      <div class="sheet-cream" style="margin-top:-10px">

@@ -156,3 +156,69 @@ function tentacleIcon(kind, size = 24) {
   };
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="tico">${heads[kind] || ""}${kind === "map" ? "" : arm}</svg>`;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   RECIPE CARDS — collectible, with foil
+   The app is about collecting the world's dishes for Glorb, so a dish
+   should feel like something you own. Technique from the Foil
+   portfolio: two stacked layers over the face, both reading the same
+   pointer position the tilt does, so the sheen tracks the angle you
+   are holding the card at. Pointer-driven throughout — nothing drifts.
+   ═══════════════════════════════════════════════════════════ */
+function foilCard(d, opts) {
+  const big = opts && opts.big;
+  const c = chapOf(d.chapter);
+  const hex = "#" + ((c && c.color) || 0x573451).toString(16).padStart(6, "0");
+  const cooked = Game.state.cooked.includes(d.id);
+  const ready = Game.canCook(d);
+  const stars = "★".repeat(d.difficulty) + "☆".repeat(5 - d.difficulty);
+  return `<div class="fcard ${big ? "fcard--big" : ""} ${cooked ? "is-cooked" : ""}"
+               data-foil data-go="#/dish/${d.id}" role="button" tabindex="0"
+               style="--fc:${hex};--fink:${(c && c.ink) || "#F3F2EC"}"
+               aria-label="${esc(d.name)}${cooked ? ", cooked" : ""}">
+    <div class="fcard__tilt">
+      <div class="fcard__face">
+        <span class="fcard__pat" style="background-image:url(assets/patterns/${d.chapter}.svg)"></span>
+        <span class="fcard__top">${flagOf(c)}<span class="fcard__diff">${stars}</span></span>
+        <span class="fcard__art">${cooked ? "🍽" : ready ? "🍄" : "🧺"}</span>
+        <span class="fcard__name">${esc(d.name)}</span>
+        <span class="fcard__learn">Teaches - ${esc(d.learn)}</span>
+        ${cooked ? `<span class="fcard__seal" aria-hidden="true">EATEN</span>` : ""}
+        <span class="foil"></span>
+        <span class="glare"></span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function wireFoil(root) {
+  (root || document).querySelectorAll("[data-foil]").forEach((host) => {
+    if (host.dataset.foilWired) return;
+    host.dataset.foilWired = "1";
+    const tilt = host.querySelector(".fcard__tilt");
+    const face = host.querySelector(".fcard__face");
+    if (!tilt || !face) return;
+    host.addEventListener("pointermove", (e) => {
+      const r = host.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width;
+      const py = (e.clientY - r.top) / r.height;
+      tilt.style.transform = `rotateY(${(px - 0.5) * 16}deg) rotateX(${(0.5 - py) * 16}deg)`;
+      /* the foil background is 300%, so a small pointer move sweeps a
+         long way — that speed difference is what reads as light on a
+         surface rather than a texture sliding about */
+      face.style.setProperty("--fx", `${18 + px * 64}%`);
+      face.style.setProperty("--fy", `${18 + py * 64}%`);
+      face.style.setProperty("--gx", `${px * 100}%`);
+      face.style.setProperty("--gy", `${py * 100}%`);
+      face.classList.add("is-lit");
+    });
+    host.addEventListener("pointerleave", () => {
+      tilt.style.transform = "";
+      face.classList.remove("is-lit");
+    });
+    host.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(host.dataset.go); }
+    });
+  });
+}
+

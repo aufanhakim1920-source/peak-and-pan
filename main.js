@@ -87,6 +87,8 @@ function afterRoute() {
     if (cur) setTimeout(() => cur.scrollIntoView({ block: "center", behavior: "auto" }), 20);
   }
 
+  wireFoil(document.getElementById("screen"));
+
   ["#grid", ".matgrid", ".chatlog", ".badges", ".steps"].forEach((sel) => {
     document.querySelectorAll(`#screen ${sel}`).forEach((el) => el.classList.add("stagger"));
   });

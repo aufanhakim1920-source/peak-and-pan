@@ -33,7 +33,7 @@ screens.search = function search() {
      <div class="sheet-cream" style="margin-top:18px">
        ${filtering
          ? `<div class="subhead subhead--ink"><h2>Results</h2></div>
-            ${list.length ? list.map(dishRow).join("") : `<div class="empty"><b>Nothing matches</b>Try another filter, or go shopping.</div>`}`
+            ${list.length ? `<div class="fgrid">${list.map((x) => foilCard(x)).join("")}</div>` : `<div class="empty"><b>Nothing matches</b>Try another filter, or go shopping.</div>`}`
          : `<div class="subhead subhead--ink"><h2>Your pantry</h2></div>
             ${PANTRY.some((p) => Game.count(p.id) > 0)
               ? `<div class="matgrid" style="margin-bottom:22px">${PANTRY.filter((p) => Game.count(p.id) > 0).map((p) => `
@@ -45,7 +45,7 @@ screens.search = function search() {
               : `<div class="empty"><b>Nothing in the pantry</b>Open a stage and go shopping.</div>`}
             ${Game.chapters().filter((c) => c.unlocked).map((c) => `
               <div class="subhead subhead--ink"><h2>${flagOf(c)} ${esc(c.country)}</h2></div>
-              ${c.dishes.map(dishById).filter(Boolean).map(dishRow).join("")}
+              <div class="fgrid">${c.dishes.map(dishById).filter(Boolean).map((x) => foilCard(x)).join("")}</div>
               <div style="height:16px"></div>`).join("")}`}
      </div>` };
 };
