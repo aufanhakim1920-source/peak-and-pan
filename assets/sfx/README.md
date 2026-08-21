@@ -19,7 +19,30 @@ them one at a time.
 Keep them **short** (under ~1.5s, except `stage-clear`) and quiet — per-sound
 volume is already set in `sfx.js`, so mix for "noticeable", not "loud".
 
-## Where to get them
+## What is in here now
+
+Nine files from **Mixkit** (Mixkit Free License — commercial use, no
+attribution required), picked by duration to match the weight of each
+moment: 0.1s for a step tick, 3s for clearing a country.
+
+⚠️ **Claude chose these without hearing them** — it cannot play audio. They
+are real recordings rather than synthesised beeps, and the lengths fit, but
+whether they *sound* right is a judgement only you can make. Swapping one is
+a drag-and-drop: same filename, done.
+
+| File | Length |
+|---|---|
+| `step.mp3` | 0.12s |
+| `tap.mp3` | 0.20s |
+| `gather.mp3` | 1.10s |
+| `lesson.mp3` | 1.11s |
+| `error.mp3` | 1.34s |
+| `unlock.mp3` | 1.51s |
+| `served.mp3` | 1.97s |
+| `levelup.mp3` | 2.44s |
+| `stage-clear.mp3` | 3.00s |
+
+## Where to get replacements
 
 Free, commercial-use, no attribution required:
 
