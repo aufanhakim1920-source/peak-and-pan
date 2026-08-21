@@ -16,3 +16,5 @@ secrets.*
 Thumbs.db
 node_modules/
 *.log
+media/
+!media/README.md
