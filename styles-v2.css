@@ -1,0 +1,348 @@
+/* ═══════════════════════════════════════════════════════════
+   Peak & Pan v2 — everything the rework added.
+   Kept in its own file so the ported-from-Figma styles stay
+   readable next to the Figma, and this is the diff.
+   ═══════════════════════════════════════════════════════════ */
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.skip {
+  position: absolute; left: 50%; top: -60px; translate: -50% 0; z-index: 200;
+  background: var(--accent); color: #573451; padding: 10px 20px; border-radius: 0 0 10px 10px;
+  font-family: var(--body); font-size: 14px; text-decoration: none;
+  transition: top 0.2s var(--pop);
+}
+.skip:focus { top: 0; }
+
+/* a visible focus ring everywhere — the Figma defines no focus states */
+:where(button, a, input, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ---------------- progression header ---------------- */
+.crown { display: flex; align-items: center; gap: 12px; padding: 60px 22px 0; position: relative; z-index: 2; }
+.crown__lvl {
+  width: 46px; height: 46px; border-radius: 14px; flex: none;
+  background: var(--accent); color: #573451;
+  display: grid; place-items: center; line-height: 1;
+  font-family: var(--display); font-weight: 700; font-size: 19px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+}
+.crown__body { flex: 1; min-width: 0; }
+.crown__title { display: block; font-family: var(--display); font-size: 17px; color: var(--on-dark); font-weight: 500; line-height: 1.1; }
+.crown__meta { display: block; font-size: 11px; color: rgba(243, 242, 236, 0.72); margin-top: 1px; }
+.crown__streak {
+  flex: none; display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(243, 242, 236, 0.14); color: var(--on-dark);
+  padding: 7px 13px; border-radius: 999px; font-size: 13px;
+}
+.crown__streak b { font-family: var(--display); font-size: 15px; }
+
+.xpbar { height: 7px; border-radius: 999px; background: rgba(243, 242, 236, 0.2); overflow: hidden; margin-top: 8px; }
+.xpbar i { display: block; height: 100%; border-radius: 999px; background: var(--accent); transition: width 0.5s var(--pop); }
+
+/* the +XP chip that flies up when you earn something */
+.xpfly {
+  position: absolute; left: 50%; top: 120px; translate: -50% 0; z-index: 120;
+  background: var(--accent); color: #573451;
+  font-family: var(--display); font-weight: 600; font-size: 15px;
+  padding: 8px 18px; border-radius: 999px; white-space: nowrap;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+  animation: xpfly 1.5s var(--pop) forwards;
+  pointer-events: none;
+}
+.xpfly[hidden] { display: none; }
+@keyframes xpfly {
+  0%   { opacity: 0; transform: translateY(14px) scale(0.9); }
+  18%  { opacity: 1; transform: translateY(0) scale(1); }
+  75%  { opacity: 1; transform: translateY(-6px); }
+  100% { opacity: 0; transform: translateY(-26px); }
+}
+
+/* ---------------- quests ---------------- */
+.quest {
+  display: grid; grid-template-columns: 34px 1fr auto; gap: 13px; align-items: center;
+  padding: 13px 0; border-bottom: 1px solid var(--line);
+}
+.quest:last-child { border-bottom: none; }
+.quest__tick {
+  width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center;
+  background: var(--line); color: var(--primary); font-size: 15px;
+}
+.quest.is-done .quest__tick { background: var(--accent); color: #573451; }
+.quest__t { display: block; font-size: 14px; color: var(--secondary); }
+.quest__bar { height: 5px; border-radius: 999px; background: var(--line); overflow: hidden; margin-top: 6px; max-width: 170px; }
+.quest__bar i { display: block; height: 100%; background: var(--primary); border-radius: 999px; transition: width 0.4s var(--pop); }
+.quest__claim {
+  font-family: var(--display); font-size: 12px; padding: 8px 14px; border-radius: 999px;
+  background: var(--accent); color: #573451; white-space: nowrap;
+  transition: transform 0.16s var(--pop);
+}
+.quest__claim:active { transform: scale(0.94); }
+.quest__claim[disabled] { background: var(--line); color: var(--primary); }
+
+/* ---------------- materials / gathering ---------------- */
+.matgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.mat {
+  position: relative; text-align: left; width: 100%;
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 12px;
+  padding: 14px; overflow: hidden;
+  transition: transform 0.18s var(--pop), border-color 0.18s;
+}
+.mat:active { transform: scale(0.97); }
+.mat:hover { border-color: var(--primary); }
+.mat__ico { width: 44px; height: 44px; margin-bottom: 10px; display: block; }
+.mat__n { display: block; font-family: var(--display); font-size: 15px; color: var(--secondary); font-weight: 500; }
+.mat__r { display: block; font-size: 10.5px; color: var(--primary); margin-top: 2px; }
+.mat__have {
+  position: absolute; top: 10px; right: 10px;
+  background: var(--accent); color: #573451;
+  font-family: var(--display); font-size: 11px;
+  min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px;
+  display: grid; place-items: center;
+}
+.mat__where { display: block; font-size: 11px; color: var(--primary); margin-top: 8px; line-height: 1.4; }
+
+/* ---------------- the globe screen ---------------- */
+.globewrap { position: absolute; inset: 0; background: radial-gradient(70% 60% at 50% 38%, #3A2A48 0%, #150F1E 70%); }
+#planet { display: block; width: 100%; height: 100%; touch-action: none; }
+.globe-top { position: absolute; left: 0; right: 0; top: 0; padding: 58px 22px 0; pointer-events: none; }
+.globe-top h2 { font-family: var(--display); font-size: 25px; color: var(--on-dark); }
+.globe-top p { font-size: 12px; color: rgba(243, 242, 236, 0.66); margin-top: 2px; }
+.globe-hint {
+  position: absolute; left: 50%; top: 152px; translate: -50% 0;
+  background: rgba(20, 14, 26, 0.72); color: var(--on-dark);
+  font-size: 11.5px; padding: 7px 16px; border-radius: 999px;
+  backdrop-filter: blur(6px); pointer-events: none;
+  transition: opacity 0.25s;
+}
+.globe-chips {
+  position: absolute; left: 0; right: 0; bottom: 150px;
+  display: flex; gap: 8px; overflow-x: auto; padding: 0 22px; scrollbar-width: none;
+}
+.globe-chips::-webkit-scrollbar { height: 0; }
+.gchip {
+  flex: none; display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(243, 242, 236, 0.12); color: var(--on-dark);
+  border: 1px solid rgba(243, 242, 236, 0.18);
+  font-size: 12px; padding: 7px 14px; border-radius: 999px; white-space: nowrap;
+  transition: transform 0.16s var(--pop), background 0.16s;
+}
+.gchip:active { transform: scale(0.94); }
+.gchip.is-seen { background: rgba(249, 233, 90, 0.18); border-color: rgba(249, 233, 90, 0.5); }
+.gchip i { width: 8px; height: 8px; border-radius: 2px; background: var(--c); display: block; }
+
+/* ---------------- assistant ---------------- */
+.ask {
+  position: absolute; right: 16px; bottom: 92px; z-index: 60;
+  width: 50px; height: 50px; border-radius: 50%;
+  background: var(--deep); color: var(--on-dark);
+  display: grid; place-items: center;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s var(--pop);
+}
+.ask:active { transform: scale(0.9); }
+.ask[hidden] { display: none; }
+
+.chatlog { display: flex; flex-direction: column; gap: 12px; padding-bottom: 12px; }
+.msg { max-width: 86%; padding: 11px 15px; border-radius: 16px; font-size: 14px; line-height: 1.5; }
+.msg--me { align-self: flex-end; background: var(--ink-bg); color: var(--on-dark); border-bottom-right-radius: 5px; }
+.msg--ai { align-self: flex-start; background: var(--bg2); border: 1px solid var(--line); color: var(--secondary); border-bottom-left-radius: 5px; }
+.msg b { color: var(--deep); font-weight: 600; }
+:root[data-theme="dark"] .msg b { color: var(--accent); }
+.msg--typing span {
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--primary); margin-right: 4px;
+  animation: blink 1.2s infinite;
+}
+.msg--typing span:nth-child(2) { animation-delay: 0.18s; }
+.msg--typing span:nth-child(3) { animation-delay: 0.36s; }
+@keyframes blink { 0%, 60%, 100% { opacity: 0.25 } 30% { opacity: 1 } }
+
+.asksuggest { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 12px; scrollbar-width: none; }
+.asksuggest::-webkit-scrollbar { height: 0; }
+.asksuggest button {
+  flex: none; font-size: 12px; padding: 8px 14px; border-radius: 999px;
+  border: 1px solid var(--line); color: var(--secondary); background: var(--bg2); white-space: nowrap;
+}
+.askbar { display: flex; gap: 9px; align-items: center; padding-top: 10px; border-top: 1px solid var(--line); }
+.askbar input {
+  flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 999px;
+  padding: 12px 16px; font-family: var(--body); font-size: 14px;
+  background: var(--field); color: var(--secondary); outline: none;
+}
+.askbar input:focus { border-color: var(--primary); }
+.askbar button {
+  width: 44px; height: 44px; border-radius: 50%; flex: none;
+  background: var(--accent); color: #573451; display: grid; place-items: center;
+}
+
+/* ---------------- rating + photos ---------------- */
+.rate { display: flex; align-items: center; gap: 4px; }
+.rate button { font-size: 24px; line-height: 1; color: var(--line); padding: 2px; transition: transform 0.14s var(--pop), color 0.14s; }
+.rate button.is-on { color: var(--accent); }
+.rate button:hover { transform: scale(1.18) rotate(-6deg); }
+.rate__n { font-size: 11.5px; color: var(--primary); margin-left: 8px; }
+
+.shots { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+.shots::-webkit-scrollbar { height: 0; }
+.shots img, .shots label {
+  width: 84px; height: 84px; border-radius: 8px; flex: none; object-fit: cover;
+  border: 1px solid var(--line);
+}
+.shots label {
+  display: grid; place-items: center; cursor: pointer;
+  color: var(--primary); font-size: 22px; background: var(--bg2);
+}
+.shots input { display: none; }
+
+/* ---------------- settings ---------------- */
+.setrow {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 15px 0; border-bottom: 1px solid var(--line);
+}
+/* block, or the label and its sub-line run together on one line */
+.setrow__t { display: block; font-size: 14.5px; color: var(--secondary); }
+.setrow__s { display: block; font-size: 11.5px; color: var(--primary); margin-top: 2px; max-width: 40ch; line-height: 1.45; }
+.switch {
+  width: 50px; height: 29px; border-radius: 999px; flex: none;
+  background: var(--line); position: relative; transition: background 0.22s;
+}
+.switch i {
+  position: absolute; top: 3px; left: 3px; width: 23px; height: 23px; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  transition: transform 0.24s var(--pop);
+}
+.switch.is-on { background: var(--accent); }
+.switch.is-on i { transform: translateX(21px); }
+
+.keyfield {
+  width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 11px 13px;
+  font-family: ui-monospace, monospace; font-size: 12.5px;
+  background: var(--field); color: var(--secondary); outline: none; margin-top: 10px;
+}
+
+/* ---------------- achievements ---------------- */
+.badges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.badge {
+  text-align: center; padding: 14px 8px; border-radius: 12px;
+  background: var(--bg2); border: 1px solid var(--line);
+}
+.badge em { font-size: 26px; font-style: normal; display: block; filter: grayscale(1); opacity: 0.35; }
+.badge.is-on em { filter: none; opacity: 1; }
+.badge b { display: block; font-family: var(--display); font-size: 11.5px; font-weight: 500; color: var(--secondary); margin-top: 6px; }
+.badge span { display: block; font-size: 9.5px; color: var(--primary); margin-top: 2px; line-height: 1.3; }
+
+/* ---------------- listen ---------------- */
+.listen {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(243, 242, 236, 0.14); color: var(--on-dark);
+  font-size: 11.5px; padding: 7px 13px; border-radius: 999px;
+  transition: transform 0.16s var(--pop);
+}
+.listen--ink { background: var(--line); color: var(--secondary); }
+.listen:active { transform: scale(0.94); }
+
+@media (prefers-reduced-motion: reduce) {
+  .xpfly { animation: none; }
+}
+
+/* ---------------- globe search ---------------- */
+.globe-search { position: absolute; left: 0; right: 0; top: 116px; padding: 0 22px; z-index: 12; }
+.globe-search .search {
+  background: rgba(20, 14, 26, 0.78);
+  border: 1px solid rgba(243, 242, 236, 0.18);
+  backdrop-filter: blur(8px);
+  box-shadow: none;
+  padding: 10px 16px;
+}
+.globe-search .search svg { color: var(--on-dark); opacity: 0.7; }
+.globe-search input { color: var(--on-dark); font-size: 13.5px; }
+.globe-search input::placeholder { color: rgba(243, 242, 236, 0.45); }
+
+.globe-results {
+  margin-top: 8px; border-radius: 14px; overflow: hidden;
+  background: rgba(20, 14, 26, 0.9);
+  border: 1px solid rgba(243, 242, 236, 0.16);
+  backdrop-filter: blur(10px);
+  max-height: 250px; overflow-y: auto;
+}
+.globe-results[hidden] { display: none; }
+.gres {
+  display: block; width: 100%; text-align: left;
+  padding: 11px 16px; color: var(--on-dark);
+  border-bottom: 1px solid rgba(243, 242, 236, 0.09);
+  transition: background 0.15s;
+}
+.gres:last-child { border-bottom: none; }
+.gres:hover { background: rgba(243, 242, 236, 0.08); }
+.gres__k {
+  display: inline-block; font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 2px;
+}
+.gres__n { display: block; font-family: var(--display); font-size: 15px; }
+.gres__s { display: block; font-size: 11px; opacity: 0.66; margin-top: 1px; }
+.gres--empty { color: rgba(243, 242, 236, 0.6); font-size: 13px; cursor: default; }
+
+/* the hint sits under the search field now */
+.globe-hint { top: 196px; }
+
+/* ---------------- replies ---------------- */
+.replies { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.replies[hidden] { display: none; }
+.reply {
+  padding: 8px 0; font-size: 13px; line-height: 1.5; color: var(--secondary);
+  border-bottom: 1px solid var(--line);
+}
+.reply:last-of-type { border-bottom: none; }
+.reply b { display: block; font-family: var(--display); font-size: 12px; color: var(--primary); font-weight: 500; }
+.reply__loading { font-size: 12px; color: var(--primary); padding: 6px 0; }
+.replybar { display: flex; gap: 8px; margin-top: 10px; }
+.replybar input {
+  flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 999px;
+  padding: 9px 14px; font-family: var(--body); font-size: 13px;
+  background: var(--field); color: var(--secondary); outline: none;
+}
+.replybar input:focus { border-color: var(--primary); }
+.replybar button {
+  flex: none; font-family: var(--display); font-size: 12.5px;
+  padding: 9px 16px; border-radius: 999px;
+  background: var(--accent); color: #573451;
+}
+
+/* ---------------- one-shot list entrance ----------------
+   Staggered, plays once on arrival, and every item settles. Nothing
+   here keeps moving after the screen has landed. */
+@keyframes riseIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.stagger > * { animation: riseIn 0.42s cubic-bezier(0.22, 1.3, 0.36, 1) backwards; }
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 45ms; }
+.stagger > *:nth-child(3) { animation-delay: 90ms; }
+.stagger > *:nth-child(4) { animation-delay: 135ms; }
+.stagger > *:nth-child(5) { animation-delay: 180ms; }
+.stagger > *:nth-child(n+6) { animation-delay: 220ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger > * { animation: none; }
+}
+
+/* shown only when the 3D module could not load (e.g. opened from file://) */
+.globe-fallback {
+  position: absolute; left: 50%; top: 50%; translate: -50% -50%;
+  width: min(310px, 84%); text-align: center;
+  background: rgba(20, 14, 26, 0.9); color: var(--on-dark);
+  border: 1px solid rgba(243, 242, 236, 0.18); border-radius: 16px;
+  padding: 22px 20px; backdrop-filter: blur(8px);
+}
+.globe-fallback b { font-family: var(--display); font-size: 17px; display: block; margin-bottom: 8px; }
+.globe-fallback p { font-size: 12.5px; line-height: 1.55; opacity: 0.72; }
+.globe-fallback code {
+  display: block; margin: 14px 0 8px; padding: 9px 12px; border-radius: 8px;
+  background: rgba(0, 0, 0, 0.45); color: var(--accent);
+  font-family: ui-monospace, monospace; font-size: 11.5px; word-break: break-all;
+}
+.globe-fallback__then { font-size: 11.5px; }

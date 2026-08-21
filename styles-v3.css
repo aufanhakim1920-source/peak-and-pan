@@ -1,0 +1,242 @@
+/* ═══════════════════════════════════════════════════════════
+   Peak & Pan — the octopus rework
+   HUD, the tentacle stage map, Glorb's cards, the bookshelf that
+   holds the settings, and the tentacle nav icons.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ---------------- HUD: level left, medals right ---------------- */
+.hud {
+  position: relative; z-index: 6;
+  display: flex; align-items: center; gap: 10px;
+  padding: 58px 16px 0;
+}
+.hud__lvl {
+  flex: 1; min-width: 0;
+  display: grid; grid-template-columns: 34px 1fr; grid-template-rows: auto auto;
+  gap: 2px 9px; align-items: center; text-align: left;
+}
+.hud__ring {
+  grid-row: 1 / 3; width: 34px; height: 34px; border-radius: 11px;
+  background: var(--accent); color: #573451;
+  display: grid; place-items: center;
+  font-family: var(--display); font-weight: 700; font-size: 15px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+.hud__bar { height: 8px; border-radius: 999px; background: rgba(243, 242, 236, 0.22); overflow: hidden; }
+.hud__bar i { display: block; height: 100%; border-radius: 999px; background: var(--accent); transition: width 0.5s var(--pop); }
+.hud__lbl {
+  font-family: var(--display); font-size: 10.5px; color: var(--on-dark); opacity: 0.85;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hud__medals {
+  display: inline-flex; align-items: center; gap: 3px; flex: none;
+  background: rgba(243, 242, 236, 0.14); border-radius: 999px; padding: 5px 11px 5px 8px;
+  color: var(--on-dark);
+}
+.hud__medals em { font-style: normal; font-size: 14px; margin-right: -4px; }
+.hud__medals em.is-empty { opacity: 0.4; }
+.hud__medals span { font-family: var(--display); font-size: 12px; margin-left: 5px; }
+.hud__streak {
+  flex: none; background: rgba(243, 242, 236, 0.14); color: var(--on-dark);
+  border-radius: 999px; padding: 6px 11px; font-size: 12px;
+}
+
+/* ---------------- the stage map ---------------- */
+.stagewrap { position: relative; }
+.stagehead { padding: 12px 16px 4px; position: relative; z-index: 6; }
+.stagehead__pick {
+  width: 100%; display: flex; align-items: center; gap: 12px; text-align: left;
+  background: rgba(243, 242, 236, 0.12); border: 1px solid rgba(243, 242, 236, 0.18);
+  border-radius: 16px; padding: 11px 14px; color: var(--on-dark);
+  transition: background 0.18s, transform 0.16s var(--pop);
+}
+.stagehead__pick:active { transform: scale(0.985); }
+.stagehead__flag { font-size: 26px; flex: none; }
+.stagehead__pick b { display: block; font-family: var(--display); font-size: 17px; font-weight: 500; }
+.stagehead__pick i { display: block; font-style: normal; font-size: 11px; opacity: 0.7; }
+.stagehead__chev { margin-left: auto; opacity: 0.6; }
+
+.stagemap { position: relative; margin: 6px 0 40px; }
+.tent { display: block; width: 100%; }
+.tent__arm { fill: none; stroke-width: 34; stroke-linecap: round; }
+.tent__inner { fill: none; stroke: rgba(255, 255, 255, 0.14); stroke-width: 12; stroke-linecap: round; }
+.suck { fill: rgba(255, 255, 255, 0.22); stroke: rgba(0, 0, 0, 0.18); stroke-width: 1; }
+
+.snode {
+  position: absolute; translate: -50% -50%;
+  width: 62px; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  color: var(--on-dark);
+  transition: transform 0.18s var(--pop);
+}
+.snode:active { transform: translate(-50%, -50%) scale(0.92); }
+.snode__dot {
+  width: 50px; height: 50px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 21px;
+  background: var(--bg2); color: var(--secondary);
+  border: 3px solid var(--ch);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.32);
+}
+.snode__n {
+  position: absolute; top: -6px; right: 2px;
+  min-width: 19px; height: 19px; border-radius: 999px; padding: 0 5px;
+  background: var(--ch); color: #fff;
+  font-family: var(--display); font-size: 11px;
+  display: grid; place-items: center;
+  border: 2px solid var(--bg2);
+}
+.snode__t {
+  font-size: 10px; line-height: 1.25; text-align: center;
+  max-width: 84px; opacity: 0.9;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+.snode.is-done .snode__dot { background: var(--accent); color: #573451; border-color: var(--accent); }
+.snode.is-locked { opacity: 0.58; }
+.snode.is-locked .snode__dot { background: #6E6A76; color: rgba(255, 255, 255, 0.7); border-color: rgba(255, 255, 255, 0.25); }
+.snode--boss .snode__dot { width: 62px; height: 62px; font-size: 27px; border-width: 4px; }
+
+/* the only looping animation on the screen, and it is one small ring */
+.snode.is-current .snode__dot { animation: nodepulse 2.4s ease-in-out infinite; }
+@keyframes nodepulse {
+  0%, 100% { box-shadow: 0 5px 14px rgba(0,0,0,.32), 0 0 0 0 rgba(249, 233, 90, 0.55); }
+  60%      { box-shadow: 0 5px 14px rgba(0,0,0,.32), 0 0 0 13px rgba(249, 233, 90, 0); }
+}
+.snode__you { position: absolute; translate: -50% 0; pointer-events: none; z-index: 3; }
+
+.stagepips { display: flex; gap: 5px; justify-content: center; }
+.stagepips i { width: 100%; max-width: 22px; height: 6px; border-radius: 999px; background: var(--line); }
+.stagepips i.is-done { background: var(--accent); }
+.stagepips i.is-now { background: var(--primary); }
+
+/* ---------------- Glorb ---------------- */
+.glorb {
+  position: relative; display: inline-grid; place-items: center; flex: none;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--gc) 34%, transparent), transparent 68%);
+}
+.glorb img { width: 100%; height: 100%; object-fit: contain; }
+.glorb__hat {
+  position: absolute; top: -2px; right: -2px;
+  font-size: 0.32em; line-height: 1;
+  background: var(--bg2); border-radius: 50%; padding: 0.16em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.glorbcard {
+  display: flex; gap: 14px; align-items: center;
+  background: var(--bg2); border: 1px solid var(--line);
+  border-left: 4px solid var(--gc);
+  border-radius: 16px; padding: 14px 16px;
+  box-shadow: var(--card-shadow);
+}
+.glorbcard--sm { padding: 11px 13px; gap: 11px; }
+.glorbcard__b { min-width: 0; flex: 1; }
+.glorbcard__mood {
+  display: block; font-family: var(--display); font-size: 12px;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--gc);
+}
+.glorbcard__line { font-size: 14.5px; line-height: 1.45; color: var(--secondary); margin-top: 3px; }
+.glorbcard__fed { display: block; font-size: 11px; color: var(--primary); margin-top: 6px; }
+
+/* ---------------- dish hero ---------------- */
+.hero--dish {
+  display: grid; place-items: center; height: 230px;
+  background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--fc) 65%, #000), color-mix(in srgb, var(--fc) 22%, #100b16));
+}
+.hero__flag { font-size: 86px; filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45)); }
+
+.lessonkick {
+  display: inline-block; font-family: var(--display); font-size: 10.5px;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--deep);
+  background: var(--accent); padding: 4px 10px; border-radius: 999px;
+}
+
+/* ---------------- the bookshelf (settings) ---------------- */
+.shelf3d { perspective: 900px; padding-top: 34px; margin-bottom: 6px; }
+.books {
+  display: flex; align-items: flex-end; justify-content: center; gap: 5px;
+  transform-style: preserve-3d;
+  transform: rotateX(6deg);
+}
+.book {
+  position: relative; transform-style: preserve-3d; flex: none;
+  transition: transform 0.28s var(--pop), filter 0.28s;
+  cursor: pointer;
+}
+.book:hover { transform: translateY(-8px); }
+.book.is-active { transform: translateY(-14px) translateZ(18px); }
+.book__spine {
+  position: absolute; inset: 0; border-radius: 2px 3px 3px 2px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px;
+  padding: 12px 0; overflow: hidden;
+  box-shadow: inset -3px 0 6px rgba(0, 0, 0, 0.28), inset 2px 0 3px rgba(255, 255, 255, 0.14);
+}
+.book__title {
+  writing-mode: vertical-rl; text-orientation: mixed;
+  font-family: var(--display); font-size: 12px; letter-spacing: 0.14em;
+  white-space: nowrap;
+}
+.book__rule { width: 60%; height: 1px; background: currentColor; opacity: 0.55; flex: none; }
+.book__pages {
+  position: absolute; left: 0; right: 0; top: 0; height: 14px;
+  transform: rotateX(-90deg); transform-origin: top;
+  background: repeating-linear-gradient(90deg, #EFE7D8 0 1px, #DCD2BE 1px 2px);
+}
+.book__edge {
+  position: absolute; top: 0; bottom: 0; right: 0; width: 14px;
+  transform: rotateY(-90deg); transform-origin: right;
+}
+.plank {
+  height: 13px; border-radius: 3px;
+  background: linear-gradient(180deg, #A2764F, #6F4E32);
+  box-shadow: 0 7px 14px rgba(0, 0, 0, 0.28);
+  width: min(330px, 96%); margin: 0 auto;
+}
+
+.bookopen {
+  margin-top: 20px; border-radius: 14px; padding: 18px;
+  background: var(--bg2); border: 1px solid var(--line);
+  border-top: 4px solid var(--bc);
+  animation: bookIn 0.32s var(--pop);
+}
+@keyframes bookIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.bookopen__k {
+  display: block; font-family: var(--display); font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--bc); margin-bottom: 10px;
+}
+
+/* ---------------- tentacle nav icons ---------------- */
+.navitem [data-tico] { display: grid; place-items: center; height: 24px; }
+.tico { color: currentColor; }
+.navitem img { display: none; }
+.globe-top--low { top: 96px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .snode.is-current .snode__dot { animation: none; }
+  .bookopen { animation: none; }
+}
+
+/* ---------------- country badge ----------------
+   Windows has no flag-emoji font, so 🇮🇩 degrades to the letters "ID"
+   with no styling at all. Drawing the letters on purpose is honest and
+   reads better than a broken glyph. */
+.flagbadge {
+  display: inline-grid; place-items: center; flex: none;
+  min-width: 26px; height: 20px; padding: 0 6px; border-radius: 5px;
+  background: var(--fc); color: #fff;
+  font-family: var(--display); font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.22);
+  vertical-align: middle;
+}
+.stagehead__flag .flagbadge { min-width: 40px; height: 30px; font-size: 15px; border-radius: 8px; }
+.row__thumb .flagbadge { min-width: 34px; height: 25px; font-size: 13px; }
+.hero__flag .flagbadge { min-width: 108px; height: 76px; font-size: 42px; border-radius: 18px; }
+
+/* stage map breathing room + readable node labels */
+.stagemap { padding-top: 16px; }
+.snode__t {
+  background: rgba(16, 11, 22, 0.72);
+  padding: 3px 7px; border-radius: 7px;
+  backdrop-filter: blur(3px);
+  text-shadow: none;
+}
+:root[data-theme="light"] .snode__t { background: rgba(87, 52, 81, 0.82); color: #F3F2EC; }

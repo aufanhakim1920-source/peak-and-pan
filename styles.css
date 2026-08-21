@@ -1,0 +1,601 @@
+/* ============================================================
+   PEAK & PAN
+   Built from the `team rocket` Figma (file GCaFeYthggBP5kXDfJJQf2).
+   Tokens below are the file's own published variables, not eyeballed:
+
+     Background1 #7B5A87 · Background2 #F3F2EC · Primary #A683B6
+     Secondary   #573451 · Accent      #F9E95A
+     Body        Tilt Neon · Display   Baloo Tammudu
+
+   #601D49 is unnamed in the file but used for the Map FAB and the
+   third segment of every subheading rule, so it's tokenised here.
+   ============================================================ */
+
+:root {
+  --bg1: #7B5A87;   /* purple ground */
+  --bg2: #F3F2EC;   /* cream sheet */
+  --primary: #A683B6;
+  --secondary: #573451;
+  --accent: #F9E95A;
+  --deep: #601D49;
+
+  --ink: var(--secondary);
+  --line: rgba(87, 52, 81, 0.18);
+
+  --display: 'Baloo Tammudu 2', system-ui, sans-serif;
+  --body: 'Tilt Neon', system-ui, sans-serif;
+
+  /* softened from the Figma's 0 4px 4px rgba(0,0,0,.25) — see the
+     team's own canvas note "do we want drop shadow on search bar??" */
+  --card-shadow: 0 3px 10px rgba(60, 30, 55, 0.16);
+  --pop: cubic-bezier(0.22, 1.3, 0.36, 1);
+
+  /* roles that must NOT flip with the theme */
+  --on-dark: #F3F2EC;      /* text sitting on purple/ink surfaces */
+  --ink-bg:  #573451;      /* the dark purple used as a background */
+  --grid:    rgba(87, 52, 81, 0.055);
+  --field:   #FFFFFF;      /* inputs */
+}
+
+/* ═══════════ dark theme ═══════════
+   Only the surface + ink tokens move. Brand colours (accent, deep,
+   the marker palette) stay put so the app still looks like itself. */
+:root[data-theme="dark"] {
+  --bg1: #241B2E;
+  --bg2: #17121F;
+  --primary: #B69ACB;
+  --secondary: #EFE7F4;
+  --line: rgba(239, 231, 244, 0.16);
+  --grid: rgba(239, 231, 244, 0.05);
+  --field: #221A2E;
+  --card-shadow: 0 3px 14px rgba(0, 0, 0, 0.5);
+}
+:root[data-theme="dark"] body { background: #0E0A14; }
+:root[data-theme="dark"] .search { background: var(--field); }
+:root[data-theme="dark"] .search input { color: var(--secondary); }
+:root[data-theme="dark"] .search input::placeholder { color: rgba(239, 231, 244, 0.42); }
+:root[data-theme="dark"] .notes textarea { background: var(--field); color: var(--secondary); }
+:root[data-theme="dark"] .deck__under { background: #2E2440; }
+:root[data-theme="dark"] .card__thumb, :root[data-theme="dark"] .row__thumb { background: #2E2440; }
+:root[data-theme="dark"] .chip { background: var(--bg2); color: var(--secondary); }
+:root[data-theme="dark"] .piece__view { background: #4A3660; color: var(--on-dark); }
+:root[data-theme="dark"] .piece__flag { background: #4A3660; }
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: var(--body);
+  background: #2A1B29;
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+img { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+
+/* ═══════════ desktop chrome ═══════════ */
+.deskside { display: none; }
+
+.phone {
+  width: 393px;
+  height: 852px;
+  max-height: 100dvh;
+  background: var(--bg1);
+  position: relative;
+  overflow: hidden;
+  border-radius: 34px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55), 0 0 0 9px #16101a, 0 0 0 10px #3a2b3f;
+}
+.phone__screen { position: absolute; inset: 0; overflow: hidden; }
+
+@media (min-width: 1100px) {
+  body { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 4rem; }
+  .deskside {
+    display: block;
+    justify-self: end;
+    max-width: 400px;
+    color: #E9DFEC;
+    font-family: var(--body);
+    padding: 2rem;
+  }
+  .deskside h1 { font-family: var(--display); font-size: 44px; color: var(--accent); line-height: 1.05; }
+  .deskside__sub { font-size: 16px; margin: 6px 0 18px; color: #D6C4DA; }
+  .deskside p { font-size: 14.5px; line-height: 1.6; color: rgba(233, 223, 236, 0.72); margin-bottom: 14px; }
+  .deskside__hint { color: var(--accent); opacity: 0.8; }
+  .deskside__keys { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .deskside__keys span {
+    font-size: 11px; padding: 6px 12px; border-radius: 999px;
+    border: 1px solid rgba(233, 223, 236, 0.25); color: rgba(233, 223, 236, 0.7);
+  }
+  .phone { grid-column: 2; }
+}
+
+@media (max-width: 460px), (max-height: 870px) and (max-width: 1099px) {
+  .phone { width: 100vw; height: 100dvh; border-radius: 0; box-shadow: none; }
+}
+
+/* ═══════════ status bar ═══════════ */
+.statusbar {
+  position: absolute; inset: 0 0 auto 0; height: 54px; z-index: 40;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 22px 0 30px;
+  color: var(--on-dark);
+  pointer-events: none;
+  transition: color 0.25s;
+}
+.statusbar.is-dark { color: var(--secondary); }
+.statusbar__time { font-family: var(--display); font-size: 16px; font-weight: 600; letter-spacing: 0.2px; }
+.statusbar__notch {
+  position: absolute; left: 50%; top: 11px; translate: -50% 0;
+  width: 112px; height: 32px; border-radius: 999px; background: #000;
+}
+.statusbar__right { display: flex; align-items: center; gap: 5px; }
+
+/* ═══════════ screen shell ═══════════ */
+.screen {
+  position: absolute; inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg1);
+  padding-bottom: 96px;
+  /* column flex so the cream sheet can grow to the bottom of short screens —
+     otherwise every detail page ends in a band of leftover purple */
+  display: flex; flex-direction: column;
+}
+.screen::-webkit-scrollbar { width: 0; }
+.screen.no-nav { padding-bottom: 0; }
+
+/* the diagonal stripe motif, straight from the Figma's Group 21 */
+.stripes {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+  opacity: 0.55;
+}
+.stripes::before, .stripes::after {
+  content: ""; position: absolute; width: 210px; height: 420px;
+  background: url("assets/stripes.svg") no-repeat center / 100% 100%;
+}
+.stripes::before { left: -111px; top: 284px; }
+.stripes::after  { left: 243px;  top: -23px; }
+
+/* hexagon ground for the onboarding screens.
+   Built as a real seamless hex tile — the usual three-linear-gradient trick
+   renders as chevrons, not hexagons, and it shows immediately at this size. */
+.hexes {
+  position: absolute; inset: 0; pointer-events: none;
+  background: url("assets/hex-tile.svg") repeat 0 0 / 52px 90px;
+  opacity: 0.75;
+}
+
+/* ═══════════ typography ═══════════ */
+.h1 {
+  font-family: var(--display); font-weight: 600;
+  font-size: 44px; line-height: 0.95; color: var(--accent);
+  padding: 0 38px; margin-top: 66px; max-width: 300px;
+}
+.h1--ink { color: var(--secondary); }
+
+/* subheading + its 3-segment rule (yellow / secondary / deep) */
+.subhead { position: relative; padding: 0 0 14px; margin: 0 0 16px; }
+.subhead h2 {
+  font-family: var(--display); font-weight: 500; font-size: 24px; line-height: 1;
+  color: var(--on-dark);
+}
+.subhead--ink h2 { color: var(--secondary); }
+.subhead::after {
+  content: ""; position: absolute; left: -4px; bottom: 4px; height: 5px; width: 133px;
+  background: linear-gradient(to right,
+    var(--accent) 0 33.3%, var(--secondary) 33.3% 66.6%, var(--deep) 66.6% 100%);
+}
+
+.sect { padding: 0 40px; }
+.sheet-cream {
+  background: var(--bg2);
+  border-radius: 5px 5px 0 0;
+  padding: 26px 40px 30px;
+  margin-top: 26px;
+  min-height: 340px;
+  position: relative;
+  flex: 1 0 auto;
+}
+.sect, .h1, .backbar, .searchwrap, .chips, .seg, .hero { flex: none; }
+
+.muted { color: var(--primary); }
+.tiny { font-family: var(--display); font-size: 11px; color: var(--primary); }
+.val  { font-family: var(--body); font-size: 11px; color: var(--secondary); }
+
+/* ═══════════ cards ═══════════ */
+.card {
+  background: var(--bg2); border-radius: 5px; box-shadow: var(--card-shadow);
+  padding: 14px; display: flex; gap: 16px; width: 100%; text-align: left;
+  transition: transform 0.18s var(--pop), box-shadow 0.18s;
+}
+.card:active { transform: scale(0.985); }
+.card__thumb {
+  width: 105px; height: 118px; border-radius: 3px; object-fit: cover; flex: none;
+  background: var(--primary);
+}
+.card__body { flex: 1; min-width: 0; padding-top: 2px; }
+.card__title { font-family: var(--display); font-size: 20px; line-height: 1.1; color: var(--primary); font-weight: 500; }
+.card__stats { display: grid; grid-template-columns: 1fr 1fr 1.1fr; gap: 4px; margin-top: 9px; }
+.card__stats b { display: block; font-family: var(--display); font-size: 11px; font-weight: 400; color: var(--primary); }
+/* CHILD selector on purpose: a descendant `span` rule also swallows the
+   .stars flex row inside, and the global `img{display:block}` then stacks
+   all five stars vertically. */
+.card__stats > span > span { display: block; font-size: 11px; color: var(--secondary); margin-top: 3px; }
+.card__notes { margin-top: 10px; }
+.card__notes b { font-family: var(--display); font-size: 11px; font-weight: 400; color: var(--primary); display: block; }
+.card__notes p {
+  font-size: 11px; color: var(--secondary); line-height: 1.35; margin-top: 2px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* the Figma stacks three cards to suggest a deck */
+.deck { position: relative; padding-bottom: 42px; }
+.deck__under {
+  position: absolute; left: 0; right: 0; height: 158px; border-radius: 5px;
+  background: #D9D9D9; box-shadow: var(--card-shadow);
+}
+.deck__under--1 { top: 20px; }
+.deck__under--2 { top: 39px; }
+.deck > .card { position: relative; z-index: 2; }
+
+.stars { display: flex !important; gap: 2px; margin-top: 4px; }
+.stars svg { width: 12px; height: 12px; flex: none; color: var(--accent); }
+.stars svg.is-off { color: rgba(166, 131, 182, 0.4); }
+
+/* small row card, used in results and lists */
+.row {
+  display: flex; gap: 12px; align-items: center; width: 100%; text-align: left;
+  background: var(--bg2); border-radius: 5px; box-shadow: var(--card-shadow);
+  padding: 10px 12px; margin-bottom: 10px;
+  transition: transform 0.18s var(--pop);
+}
+.row:active { transform: scale(0.985); }
+.row__thumb { width: 62px; height: 54px; border-radius: 3px; object-fit: cover; flex: none; background: var(--primary); }
+.row__body { min-width: 0; flex: 1; }
+.row__title { font-family: var(--display); font-size: 13px; color: var(--primary); font-weight: 500; }
+.row__sub { font-size: 11px; color: var(--secondary); line-height: 1.35; margin-top: 2px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.row__meta { font-size: 10px; color: var(--primary); flex: none; text-align: right; }
+
+/* ═══════════ search + chips ═══════════ */
+/* must clear the 54px status bar / notch — the Figma frames draw the phone
+   UI on a separate layer so the search bar looks like it starts at the top */
+.searchwrap { padding: 62px 22px 0; position: relative; z-index: 20; }
+.search {
+  display: flex; align-items: center; gap: 10px;
+  background: #fff; border-radius: 999px; padding: 12px 18px;
+  box-shadow: var(--card-shadow);
+}
+.search svg { flex: none; color: var(--secondary); opacity: 0.65; }
+.search input {
+  border: none; outline: none; background: none; flex: 1; min-width: 0;
+  font-family: var(--body); font-size: 15px; color: var(--secondary);
+}
+.search input::placeholder { color: rgba(87, 52, 81, 0.42); }
+.search__clear { font-size: 18px; line-height: 1; color: var(--secondary); opacity: 0.5; padding: 2px 4px; }
+
+/* team note: "i think the filter chips should not be title font" — body font it is */
+.chips { display: flex; gap: 10px; overflow-x: auto; padding: 12px 22px 4px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { height: 0; }
+.chip {
+  flex: none; display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--body); font-size: 12.5px; letter-spacing: 0.2px;
+  padding: 8px 16px; border-radius: 999px;
+  background: var(--bg2); color: var(--secondary);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.16s var(--pop), background 0.16s, color 0.16s;
+}
+.chip:active { transform: scale(0.94); }
+.chip--outline { background: transparent; border: 1.5px solid var(--bg2); color: var(--on-dark); box-shadow: none; }
+.chip.is-on { background: var(--accent); color: var(--secondary); }
+.chip.is-on::after { content: "✕"; font-size: 10px; opacity: 0.65; }
+
+/* ═══════════ buttons ═══════════ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font-family: var(--display); font-size: 16px; font-weight: 500;
+  background: var(--accent); color: var(--secondary);
+  padding: 13px 26px; border-radius: 999px; width: 100%;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.16s var(--pop), filter 0.16s;
+}
+.btn:active { transform: scale(0.97); filter: brightness(0.94); }
+.btn--ghost { background: transparent; color: var(--on-dark); border: 1.5px solid rgba(243, 242, 236, 0.5); box-shadow: none; }
+.btn--ink { background: var(--ink-bg); color: var(--on-dark); }
+.btn--sm { width: auto; flex: none; font-size: 13px; padding: 9px 18px; }
+
+.backbar { display: flex; align-items: center; gap: 12px; padding: 62px 22px 0; position: relative; z-index: 10; }
+/* on a screen that opens with a hero image the back button belongs ON the
+   image, not stranded in the band underneath it */
+.backbar--over { position: absolute; left: 0; right: 0; top: 0; z-index: 15; }
+.backbtn {
+  width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; flex: none;
+  background: rgba(243, 242, 236, 0.16); color: var(--on-dark);
+  transition: transform 0.16s var(--pop), background 0.16s;
+}
+.backbtn:active { transform: scale(0.9); }
+.backbar--ink .backbtn { background: rgba(87, 52, 81, 0.1); color: var(--secondary); }
+.backbar__title { font-family: var(--display); font-size: 19px; color: var(--on-dark); font-weight: 500; }
+.backbar--ink .backbar__title { color: var(--secondary); }
+
+/* ═══════════ hotbar ═══════════ */
+.hotbar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 77px; z-index: 50;
+  display: grid; grid-template-columns: repeat(5, 1fr); align-items: end;
+}
+.hotbar__bar { position: absolute; left: 0; right: 0; bottom: 0; height: 53px; background: var(--ink-bg); }
+.navitem {
+  position: relative; z-index: 2; height: 53px;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  gap: 3px; padding-bottom: 8px; color: var(--on-dark);
+}
+.navitem img { opacity: 0.72; transition: opacity 0.18s, transform 0.18s var(--pop); }
+.navitem span { font-family: var(--display); font-size: 10px; opacity: 0.8; }
+.navitem.is-on img { opacity: 1; transform: translateY(-2px); }
+.navitem.is-on span { opacity: 1; color: var(--accent); }
+.navitem:active img { transform: scale(0.86); }
+
+.navitem--fab { height: 77px; justify-content: flex-start; padding: 0; }
+.fab {
+  width: 48px; height: 48px; border-radius: 50%; background: var(--deep);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  color: var(--on-dark); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.18s var(--pop);
+}
+.fab span { font-family: var(--display); font-size: 10px; }
+/* the Figma FAB is always deep purple with a cream icon, so the active state
+   is a ring rather than a colour swap — recolouring a fixed-fill exported SVG
+   needs a filter hack and the icon disappears into the yellow */
+.navitem--fab.is-on .fab { box-shadow: 0 0 0 3px var(--accent), 0 4px 12px rgba(0, 0, 0, 0.3); }
+.navitem--fab:active .fab { transform: scale(0.9); }
+
+/* ═══════════ map ═══════════ */
+.mapwrap { position: absolute; inset: 0; background: var(--ink-bg); }
+.mapsvg { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
+.map-ui { position: absolute; left: 0; right: 0; top: 0; }
+.map-foot {
+  position: absolute; left: 0; right: 0; bottom: 92px;
+  display: flex; align-items: center; justify-content: space-between; padding: 0 22px; gap: 12px;
+}
+.dist {
+  font-family: var(--body); font-size: 13px; color: var(--on-dark);
+  background: var(--primary); padding: 7px 18px; border-radius: 999px;
+}
+.recenter {
+  width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(243, 242, 236, 0.16); color: var(--on-dark);
+  transition: transform 0.16s var(--pop);
+}
+.recenter:active { transform: scale(0.9) rotate(-25deg); }
+
+.pin { cursor: pointer; transform-box: fill-box; transform-origin: center; }
+.pin:hover .pin__head { filter: brightness(1.12); }
+/* a single small contained pulse — the "you are here" ping from the Figma */
+@keyframes ping { 0% { r: 10; opacity: .55 } 100% { r: 26; opacity: 0 } }
+.ping-ring { animation: ping 2.4s ease-out infinite; }
+
+/* ═══════════ steps / notes ═══════════ */
+.steps { counter-reset: st; }
+.step {
+  display: grid; grid-template-columns: 34px 1fr; gap: 14px; align-items: start;
+  padding: 16px 0; border-bottom: 1px solid var(--line);
+}
+.step__n {
+  width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+  font-family: var(--display); font-size: 15px;
+  background: var(--primary); color: var(--on-dark);
+}
+.step.is-done .step__n { background: var(--accent); color: var(--secondary); }
+.step.is-done .step__t { opacity: 0.45; text-decoration: line-through; }
+.step__t { font-size: 14px; line-height: 1.45; color: var(--secondary); }
+.step__hint { display: block; font-family: var(--display); font-size: 11px; color: var(--primary); margin-top: 4px; }
+
+.needpanel {
+  border: 1px solid var(--secondary); border-radius: 5px;
+  background: rgba(217, 217, 217, 0.2); padding: 12px 14px;
+}
+.needpanel h3 { font-family: var(--display); font-size: 16px; font-weight: 500; color: var(--primary); text-align: center; margin-bottom: 6px; }
+.needrow { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; line-height: 25px; color: var(--secondary); }
+/* a "Still need" list that strikes through what you HAVE reads backwards —
+   the gathered items are dimmed and ticked instead */
+.needrow.is-have { color: var(--primary); opacity: 0.55; }
+
+/* ═══════════ sheet ═══════════ */
+.sheet { position: absolute; inset: 0; z-index: 80; }
+.sheet[hidden] { display: none; }
+.sheet__scrim { position: absolute; inset: 0; background: rgba(30, 12, 28, 0.5); }
+.sheet__panel {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  background: var(--bg2); border-radius: 18px 18px 0 0; padding: 10px 24px 28px;
+  max-height: 78%; overflow-y: auto;
+  animation: sheetUp 0.34s var(--pop);
+}
+@keyframes sheetUp { from { transform: translateY(100%) } to { transform: none } }
+.sheet__grab { width: 44px; height: 4px; border-radius: 999px; background: var(--line); margin: 0 auto 16px; }
+
+/* team note: "maybe the typing space should be bigger?" — yes */
+.notes textarea {
+  width: 100%; min-height: 132px; resize: vertical;
+  font-family: var(--body); font-size: 14px; line-height: 1.5; color: var(--secondary);
+  background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px;
+  outline: none;
+}
+.notes textarea:focus { border-color: var(--primary); }
+
+/* ═══════════ social ═══════════ */
+.seg { display: flex; gap: 8px; padding: 0 22px 4px; }
+.seg button {
+  flex: 1 1 0; min-width: 0; font-family: var(--body); font-size: 13px; padding: 9px 0; border-radius: 999px;
+  background: rgba(243, 242, 236, 0.14); color: var(--on-dark);
+}
+.seg button.is-on { background: var(--accent); color: var(--secondary); }
+
+.post { background: var(--bg2); border-radius: 8px; box-shadow: var(--card-shadow); padding: 14px; margin-bottom: 14px; }
+.post__head { display: flex; align-items: center; gap: 10px; }
+.post__pfp { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: var(--primary); }
+.post__name { font-family: var(--display); font-size: 14px; color: var(--secondary); font-weight: 500; }
+.post__when { font-size: 10px; color: var(--primary); }
+.post__body { font-size: 13.5px; line-height: 1.5; color: var(--secondary); margin: 10px 0; }
+.post__img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; }
+.post__acts { display: flex; gap: 18px; margin-top: 10px; }
+.post__acts button { font-size: 12px; color: var(--primary); display: inline-flex; align-items: center; gap: 5px; }
+.post__acts button.is-on { color: var(--deep); }
+
+.cats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.cat { text-align: center; }
+.cat img, .cat .cat__ph { width: 100%; height: 100px; border-radius: 6px; object-fit: cover; background: var(--primary); }
+.cat span { display: block; font-size: 12px; color: var(--secondary); margin-top: 6px; }
+
+/* ═══════════ creature / detail ═══════════ */
+.hero { position: relative; height: 300px; overflow: hidden; }
+.hero img { width: 100%; height: 100%; object-fit: cover; }
+.hero__scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(87,52,81,.55) 0%, transparent 32%, rgba(123,90,135,.9) 100%); }
+.hero__title { position: absolute; left: 24px; bottom: 16px; right: 24px; }
+.hero__title h2 { font-family: var(--display); font-size: 32px; color: var(--accent); line-height: 1; }
+.hero__title p { font-family: var(--body); font-size: 12.5px; color: var(--on-dark); opacity: 0.85; margin-top: 4px; }
+
+.pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 18px; }
+.pill {
+  font-size: 11px; padding: 6px 13px; border-radius: 999px;
+  background: rgba(166, 131, 182, 0.22); color: var(--secondary);
+}
+.pill--danger { background: rgba(200, 60, 60, 0.16); color: #B03636; }
+.pill--accent { background: var(--accent); color: var(--secondary); }
+
+.kv { display: grid; grid-template-columns: 96px 1fr; gap: 6px 14px; font-size: 13px; margin-bottom: 18px; }
+.kv dt { font-family: var(--display); color: var(--primary); font-size: 12px; }
+.kv dd { color: var(--secondary); line-height: 1.45; }
+
+.body-copy { font-size: 13.5px; line-height: 1.6; color: var(--secondary); }
+
+/* ═══════════ profile ═══════════ */
+.statgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.statbox { background: var(--bg2); border-radius: 8px; padding: 14px 10px; text-align: center; box-shadow: var(--card-shadow); }
+.statbox b { display: block; font-family: var(--display); font-size: 24px; color: var(--deep); line-height: 1; }
+.statbox span { display: block; font-size: 10.5px; color: var(--primary); margin-top: 4px; }
+
+/* ═══════════ onboarding ═══════════ */
+.ob { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.ob__art { flex: 1; display: grid; place-items: center; padding: 60px 30px 0; }
+.ob__art img { width: 62%; max-width: 250px; height: auto; }
+.ob__copy { background: var(--bg2); border-radius: 18px 18px 0 0; padding: 30px 34px 40px; }
+.ob__copy h2 { font-family: var(--display); font-size: 32px; line-height: 1.02; color: var(--deep); }
+.ob__copy p { font-size: 13.5px; line-height: 1.6; color: var(--secondary); opacity: 0.8; margin: 12px 0 22px; }
+.dots { display: flex; gap: 7px; justify-content: center; margin-top: 16px; }
+.dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); opacity: 0.35; }
+.dots i.is-on { opacity: 1; background: var(--deep); width: 20px; border-radius: 999px; }
+
+.splash { position: absolute; inset: 0; display: grid; place-items: center; }
+.splash__inner { text-align: center; }
+.splash__inner img { width: 200px; margin: 0 auto 10px; }
+.splash__inner h1 { font-family: var(--display); font-size: 34px; color: var(--on-dark); letter-spacing: 1px; }
+
+/* ═══════════ toast ═══════════ */
+.toast {
+  position: absolute; left: 50%; bottom: 96px; translate: -50% 0; z-index: 90;
+  background: var(--ink-bg); color: var(--on-dark);
+  font-size: 13px; padding: 11px 20px; border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  animation: toastIn 0.28s var(--pop);
+}
+.toast[hidden] { display: none; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
+
+.empty { text-align: center; padding: 40px 20px; color: var(--primary); font-size: 13.5px; }
+.empty b { display: block; font-family: var(--display); font-size: 17px; color: var(--secondary); margin-bottom: 6px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GUIDE TEMPLATE
+   Preparation / The Hunt / Butchering / Recommended Pieces are
+   one shared layout in the Figma, not four different screens:
+   hex header → altitude range → season → party bar → sections.
+   ═══════════════════════════════════════════════════════════ */
+.guidehead {
+  position: relative;
+  background: var(--bg1);
+  padding: 58px 24px 18px;
+  overflow: hidden;
+  flex: none;
+}
+.guidehead > * { position: relative; z-index: 1; }
+.guidehead .subhead { margin: 0; padding-bottom: 12px; }
+.guidehead__row { display: flex; align-items: center; gap: 10px; }
+
+/* faint graph paper under the cream body — it's in every guide frame */
+.gridpaper {
+  background-color: var(--on-dark);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 23px 23px;
+}
+
+.altitude { margin-bottom: 24px; }
+.alt__labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--secondary); margin-bottom: 9px; }
+.alt__track {
+  position: relative; height: 27px; border-radius: 999px;
+  background: var(--primary); cursor: pointer;
+}
+.alt__fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: #4A2B45; transition: width 0.25s var(--pop); }
+.alt__dot {
+  position: absolute; top: 50%; translate: -50% -50%;
+  width: 11px; height: 11px; border-radius: 50%; background: var(--bg2);
+  transition: background 0.2s, width 0.2s, height 0.2s;
+}
+.alt__dot.is-on { background: var(--accent); width: 14px; height: 14px; }
+
+.seasons { display: flex; gap: 10px; margin-bottom: 22px; }
+.season {
+  flex: 1; padding: 9px 4px; border-radius: 999px; text-align: center;
+  background: var(--primary); color: var(--on-dark);
+  font-family: var(--body); font-size: 12.5px;
+  transition: transform 0.16s var(--pop);
+}
+.season.is-on { background: var(--deep); color: var(--accent); }
+.season:active { transform: scale(0.95); }
+
+.metabar {
+  display: flex; align-items: center; justify-content: center; gap: 34px;
+  background: var(--ink-bg); color: var(--on-dark);
+  border-radius: 10px; padding: 15px; margin-bottom: 26px; font-size: 13.5px;
+}
+.metabar span { display: inline-flex; align-items: center; gap: 9px; }
+
+.guidesec { margin-bottom: 26px; }
+.guidesec p { font-size: 12.5px; line-height: 1.65; color: var(--secondary); margin-bottom: 8px; }
+.guidesec__plate { height: 120px; border-radius: 6px; background: var(--deep); margin: 12px 0 8px; opacity: 0.92; }
+.guidesec__cap { font-size: 11.5px; color: var(--secondary); opacity: 0.8; }
+
+/* recommended piece card */
+.piece {
+  position: relative; display: flex; gap: 14px;
+  background: var(--primary); border-radius: 8px; padding: 12px 12px 44px;
+  margin-bottom: 14px; color: var(--on-dark);
+}
+.piece__img { width: 96px; height: 96px; border-radius: 4px; background: var(--ink-bg); object-fit: cover; flex: none; }
+.piece__t { font-family: var(--display); font-size: 17px; font-weight: 500; }
+.piece__m { font-size: 11px; line-height: 1.6; opacity: 0.88; margin-top: 3px; }
+.piece__view {
+  position: absolute; right: 12px; bottom: 12px;
+  background: #CBB2D8; color: var(--secondary);
+  font-size: 12px; padding: 6px 20px; border-radius: 999px;
+}
+.piece__flag {
+  position: absolute; right: 14px; top: 0; width: 30px; height: 40px;
+  background: #CBB2D8; color: #2E7D4F;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+  display: grid; place-items: start center; padding-top: 6px;
+  transition: background 0.18s, color 0.18s;
+}
+.piece__flag.is-on { background: var(--accent); color: #1E6B3E; }
+.piece.is-taken { outline: 2px solid var(--accent); }

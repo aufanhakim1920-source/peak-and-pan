@@ -1,0 +1,6 @@
+# vendor/ is deliberately committed — three.js is vendored so the globe
+# works with no internet and teammates need no install step.
+.DS_Store
+Thumbs.db
+node_modules/
+*.log
