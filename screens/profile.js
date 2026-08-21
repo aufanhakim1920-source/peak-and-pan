@@ -72,6 +72,10 @@ function bookPanel(id) {
         <button class="switch ${Narrator.enabled ? "is-on" : ""}" data-toggle="audio" role="switch" aria-checked="${Narrator.enabled}" aria-label="Audio description"><i></i></button>
       </div>
       <div class="setrow">
+        <span><span class="setrow__t">Sound effects</span><span class="setrow__s">Off by default so a shared link never ambushes anyone. Files live in assets/sfx/ — missing ones are skipped.</span></span>
+        <button class="switch ${SFX.enabled ? "is-on" : ""}" data-toggle="sound" role="switch" aria-checked="${SFX.enabled}" aria-label="Sound effects"><i></i></button>
+      </div>
+      <div class="setrow">
         <span><span class="setrow__t">Dark mode</span><span class="setrow__s">Follows your system on first open. This overrides it.</span></span>
         <button class="switch ${theme() === "dark" ? "is-on" : ""}" data-toggle="dark" role="switch" aria-checked="${theme() === "dark"}" aria-label="Dark mode"><i></i></button>
       </div>`,

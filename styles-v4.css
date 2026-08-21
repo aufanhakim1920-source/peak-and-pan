@@ -165,3 +165,46 @@
    toast follows the sheet in the DOM, so a sibling selector moves it out
    of the way without any JS. */
 .sheet:not([hidden]) ~ .toast { top: 66px; bottom: auto; }
+
+/* ═══════════ effects layer ═══════════
+   One-shot only. Every piece removes itself on animationend. */
+.fxlayer { position: absolute; inset: 0; pointer-events: none; z-index: 130; overflow: hidden; }
+
+.fx-ring {
+  position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px;
+  border-radius: 50%; border: 2.5px solid var(--c);
+  animation: fxRing 620ms cubic-bezier(.2,.7,.3,1) forwards;
+}
+@keyframes fxRing {
+  from { transform: scale(0.4); opacity: 0.95; }
+  to   { transform: scale(5.2); opacity: 0; }
+}
+
+.fx-spark {
+  position: absolute; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px;
+  border-radius: 2px; background: var(--c);
+  animation: fxSpark 640ms cubic-bezier(.15,.75,.3,1) forwards;
+}
+@keyframes fxSpark {
+  from { transform: translate(0,0) rotate(0) scale(1); opacity: 1; }
+  to   { transform: translate(var(--dx), var(--dy)) rotate(var(--r)) scale(0.3); opacity: 0; }
+}
+
+.fx-flash {
+  position: absolute; inset: 0;
+  background: radial-gradient(120% 80% at 50% 50%, transparent 42%, var(--c) 130%);
+  animation: fxFlash 760ms ease-out forwards;
+}
+@keyframes fxFlash { from { opacity: 0.5 } to { opacity: 0 } }
+
+.fx-ribbon {
+  position: absolute; width: 8px; height: 13px; border-radius: 2px;
+  background: var(--c);
+  animation: fxRibbon 1500ms cubic-bezier(.3,.5,.4,1) forwards;
+}
+@keyframes fxRibbon {
+  from { transform: translateY(-10px) rotate(0); opacity: 1; }
+  to   { transform: translateY(var(--dy)) rotate(var(--r)); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) { .fxlayer { display: none; } }

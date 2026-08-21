@@ -179,7 +179,13 @@ document.addEventListener("click", async (e) => {
   if (node) { const [ch, i] = node.dataset.node.split(":"); openNode(ch, Number(i)); return; }
 
   const seen = t.closest("[data-seen]");
-  if (seen) { showReward(Game.see(seen.dataset.seen)); closeSheet(); route(); return; }
+  if (seen) {
+    SFX.play("lesson");
+    showReward(Game.see(seen.dataset.seen));
+    closeSheet(); route();
+    FX.burst(document.querySelector(".snode.is-done:last-of-type"), "var(--accent)", 8);
+    return;
+  }
 
   const book = t.closest("[data-book]");
   if (book) { bookPanel(book.dataset.book); return; }
@@ -207,6 +213,8 @@ document.addEventListener("click", async (e) => {
 
   const gather = t.closest("[data-gather]");
   if (gather) {
+    FX.burst(gather, "var(--accent)");
+    SFX.play("gather");
     showReward(Game.gather(gather.dataset.gather));
     closeSheet();
     route();
@@ -215,6 +223,7 @@ document.addEventListener("click", async (e) => {
 
   const buy = t.closest("[data-buy]");
   if (buy) {
+    SFX.play("unlock");
     const id = buy.dataset.buy;
     Game.purchase(id);
     closeSheet();
@@ -239,6 +248,7 @@ document.addEventListener("click", async (e) => {
 
   const dstep = t.closest("[data-dstep]");
   if (dstep) {
+    if (!dstep.classList.contains("is-done")) SFX.play("step");
     const id = routeArg(), all = readSteps(), set = new Set(all[id] || []);
     const i = Number(dstep.dataset.dstep);
     set.has(i) ? set.delete(i) : set.add(i);
@@ -265,7 +275,9 @@ document.addEventListener("click", async (e) => {
   const toggle = t.closest("[data-toggle]");
   if (toggle) {
     const which = toggle.dataset.toggle;
-    if (which === "audio") {
+    if (which === "sound") {
+      SFX.enabled = !SFX.enabled;
+    } else if (which === "audio") {
       Narrator.enabled = !Narrator.enabled;
       if (Narrator.enabled) Narrator.readAloud("Audio description on.");
     } else {
@@ -317,6 +329,8 @@ document.addEventListener("change", async (e) => {
    then offers the photo — which is what feeds the community stars. */
 function servedSheet(d, result) {
   const mood = Game.mood();
+  SFX.play("served");
+  FX.flash("color-mix(in srgb, var(--accent) 55%, transparent)");
   openSheet(`
     <div style="text-align:center">${glorbArt(mood, 128, d.chapter)}</div>
     <h3 style="font-family:var(--display);font-size:25px;color:var(--secondary);text-align:center;margin-top:8px">

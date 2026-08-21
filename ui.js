@@ -44,6 +44,14 @@ function showReward(res) {
   showReward._t = setTimeout(() => { fly.hidden = true; }, 1500);
 
   if (res.chapterCleared) {
+    SFX.play("stageClear");
+    FX.cheer(document.querySelector(".brief") || document.body, "#F9E95A");
+  } else if (res.levelUp) {
+    SFX.play("levelup");
+    FX.flash("color-mix(in srgb, var(--accent) 45%, transparent)");
+  }
+
+  if (res.chapterCleared) {
     toast(`${res.chapterCleared.code} · ${res.chapterCleared.country} cleared`);
     if (res.chapterUnlocked) setTimeout(() => toast(`${res.chapterUnlocked.code} · ${res.chapterUnlocked.country} unlocked`), 1100);
   } else if (res.levelUp) {
