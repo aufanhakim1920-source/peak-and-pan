@@ -127,3 +127,11 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.42);
 }
 .fcard--big .fcard__photo { width: 82%; }
+
+/* community love, out of 3 — not difficulty */
+.fcard__love { font-size: 10px; letter-spacing: 1px; color: var(--accent); white-space: nowrap; }
+.fcard__norate {
+  font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--fink); opacity: 0.6; letter-spacing: 0.06em;
+}
+.fcard--big .fcard__love { font-size: 13px; }

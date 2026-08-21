@@ -176,6 +176,51 @@ async function loadMedia(live) {
 /** URL for a piece of official art, or "" if none is uploaded yet. */
 function mediaUrl(kind, key) { return MEDIA[`${kind}/${key}`] || ""; }
 
+/* ---------------- how loved a dish is ----------------
+   Community score, not difficulty. People rate 1-5; what the card shows
+   is the RATIO who loved it (4 or 5) turned into 0-3 stars, so one
+   generous friend cannot make a dish look beloved — it takes agreement.
+   Fetched in bulk once rather than per card. */
+let LOVE = {};
+
+function scoreRows(rows) {
+  const by = {};
+  rows.forEach((r) => {
+    const k = r.recipe_id;
+    by[k] = by[k] || { total: 0, loved: 0, sum: 0 };
+    by[k].total += 1;
+    by[k].sum += r.stars;
+    if (r.stars >= 4) by[k].loved += 1;
+  });
+  const out = {};
+  for (const [k, v] of Object.entries(by)) {
+    const ratio = v.loved / v.total;
+    /* needs at least two votes before it can show 3 — a single rating is
+       an opinion, not a consensus */
+    let stars = ratio >= 0.8 ? 3 : ratio >= 0.5 ? 2 : ratio >= 0.25 ? 1 : 0;
+    if (v.total < 2 && stars === 3) stars = 2;
+    out[k] = { stars, ratio, count: v.total, avg: v.sum / v.total };
+  }
+  return out;
+}
+
+async function loadLove(live) {
+  try {
+    if (live) {
+      LOVE = scoreRows(await sb("ratings?select=recipe_id,stars"));
+    } else {
+      LOVE = scoreRows((readLocal().ratings || []).map((r) => ({ recipe_id: r.recipe_id, stars: r.stars })));
+    }
+  } catch (err) {
+    console.warn("[db] love index unavailable", err);
+    LOVE = {};
+  }
+  return LOVE;
+}
+
+/** { stars 0-3, ratio, count, avg } or null when nobody has rated it */
+function loveOf(recipeId) { return LOVE[recipeId] || null; }
+
 /* ---------------- the interface the app actually calls ---------------- */
 const DB = (() => {
   /* Boolean(), not the && chain: that returns the KEY as a truthy value,
@@ -205,5 +250,7 @@ const DB = (() => {
     addReply: guard("addReply"),
     media: mediaUrl,
     loadMedia: () => loadMedia(live),
+    love: loveOf,
+    loadLove: () => loadLove(live),
   };
 })();

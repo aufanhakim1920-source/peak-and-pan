@@ -231,6 +231,7 @@ document.addEventListener("click", async (e) => {
   if (star) {
     const id = star.closest("[data-recipe]").dataset.recipe;
     await DB.rate(id, Number(star.dataset.star));
+    await DB.loadLove();          // the card's stars are everyone's average
     showReward(Game.rated());
     loadDishSocial(id);
     return;
@@ -327,4 +328,6 @@ afterRoute();
 
 /* pull the artwork index, then repaint once so pictures replace the
    drawn fallbacks without blocking first paint */
-DB.loadMedia().then((m) => { if (Object.keys(m).length) { route(); afterRoute(); } });
+Promise.all([DB.loadMedia(), DB.loadLove()]).then(([m, l]) => {
+  if (Object.keys(m).length || Object.keys(l).length) { route(); afterRoute(); }
+});

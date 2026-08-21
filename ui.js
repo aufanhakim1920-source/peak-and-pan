@@ -174,7 +174,9 @@ function foilCard(d, opts) {
   const hex = "#" + ((c && c.color) || 0x573451).toString(16).padStart(6, "0");
   const cooked = Game.state.cooked.includes(d.id);
   const ready = Game.canCook(d);
-  const stars = "★".repeat(d.difficulty) + "☆".repeat(5 - d.difficulty);
+  /* the stars are the community's, not ours: how many people loved it,
+     out of 3. Difficulty still lives on the dish page as a pill. */
+  const love = DB.love(d.id);
   return `<div class="fcard ${big ? "fcard--big" : ""} ${cooked ? "is-cooked" : ""}"
                data-foil data-go="#/dish/${d.id}" role="button" tabindex="0"
                style="--fc:${hex};--fink:${(c && c.ink) || "#F3F2EC"}"
@@ -182,7 +184,9 @@ function foilCard(d, opts) {
     <div class="fcard__tilt">
       <div class="fcard__face">
         <span class="fcard__pat" style="background-image:url(assets/patterns/${d.chapter}.svg)"></span>
-        <span class="fcard__top">${flagOf(c)}<span class="fcard__diff">${stars}</span></span>
+        <span class="fcard__top">${flagOf(c)}<span class="fcard__love" title="${love ? `${Math.round(love.ratio * 100)}% of ${love.count} loved it` : "No ratings yet"}">
+          ${love ? "★".repeat(love.stars) + "☆".repeat(3 - love.stars) : `<span class="fcard__norate">not rated</span>`}
+        </span></span>
         <span class="fcard__art">${DB.media("dish", d.id)
           ? `<img class="fcard__photo" src="${DB.media("dish", d.id)}" alt="" loading="lazy">`
           : cooked ? "🍽" : ready ? "🍄" : "🧺"}</span>
