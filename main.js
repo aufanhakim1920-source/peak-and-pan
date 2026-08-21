@@ -253,10 +253,11 @@ document.addEventListener("click", async (e) => {
     const d = dishById(fin.dataset.dfinish);
     const all = readSteps(); all[d.id] = d.steps.map((_, i) => i); writeSteps(all);
     const result = Game.cook(d);
-    go("#/stage");
-    setTimeout(() => showReward(result), 140);
+    servedSheet(d, result);
     return;
   }
+
+  if (t.closest("[data-served-done]")) { closeSheet(); go("#/stage"); return; }
 
   const sug = t.closest("[data-suggest]");
   if (sug) { sendChat(sug.dataset.suggest); return; }
@@ -309,6 +310,34 @@ document.addEventListener("change", async (e) => {
   };
   reader.readAsDataURL(inp.files[0]);
 });
+
+/* ---------------- the moment it lands ----------------
+   Finishing used to jump straight back to the map, so the cook had no
+   ending and no reason to post. Serving now opens on Glorb's reaction,
+   then offers the photo — which is what feeds the community stars. */
+function servedSheet(d, result) {
+  const mood = Game.mood();
+  openSheet(`
+    <div style="text-align:center">${glorbArt(mood, 128, d.chapter)}</div>
+    <h3 style="font-family:var(--display);font-size:25px;color:var(--secondary);text-align:center;margin-top:8px">
+      ${esc(d.name)} — served
+    </h3>
+    <p style="font-size:14px;line-height:1.5;color:var(--secondary);text-align:center;margin:8px 0 4px">“${esc(d.glorb)}”</p>
+    <p style="font-size:12.5px;color:var(--primary);text-align:center;margin-bottom:16px">
+      +${result ? result.xp : 0} XP${result && result.chapterCleared ? ` · ${esc(result.chapterCleared.country)} cleared` : ""}
+    </p>
+    <div class="servedshot">
+      <label class="servedshot__drop">
+        <input type="file" accept="image/*" data-photo="${d.id}">
+        <b>Post a photo of yours</b>
+        <span>Other players rate it — that is where a dish's stars come from</span>
+      </label>
+    </div>
+    <div style="height:12px"></div>
+    <button class="btn btn--ink" data-served-done>Back to the mission</button>`);
+  Narrator.say(`${d.name} served. ${d.glorb}. Plus ${result ? result.xp : 0} experience.`);
+  setTimeout(() => showReward(result), 260);
+}
 
 /* ---------------- boot ---------------- */
 window.addEventListener("hashchange", afterRoute);

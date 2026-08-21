@@ -135,3 +135,33 @@
   color: var(--fink); opacity: 0.6; letter-spacing: 0.06em;
 }
 .fcard--big .fcard__love { font-size: 13px; }
+
+/* ═══════════ the cook bar ═══════════
+   Always on screen while you work through the steps. */
+.cookbar {
+  position: absolute; left: 0; right: 0; bottom: 77px; z-index: 40;
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: rgba(12, 8, 16, 0.86);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(14px);
+}
+.cookbar__note { flex: 1; font-size: 12px; color: rgba(255, 255, 255, 0.82); line-height: 1.35; }
+.cookbar .btn { width: auto; flex: none; padding: 12px 22px; }
+
+/* the photo prompt after serving */
+.servedshot__drop {
+  display: block; text-align: center; cursor: pointer;
+  border: 1.5px dashed var(--line); border-radius: 14px;
+  padding: 18px 16px; background: var(--bg2);
+  transition: border-color 0.18s, background 0.18s;
+}
+.servedshot__drop:hover { border-color: var(--primary); }
+.servedshot__drop input { display: none; }
+.servedshot__drop b { display: block; font-family: var(--display); font-size: 16px; color: var(--secondary); }
+.servedshot__drop span { display: block; font-size: 11.5px; color: var(--primary); margin-top: 5px; line-height: 1.45; }
+
+/* When a sheet is open the toast was landing in the middle of it. The
+   toast follows the sheet in the DOM, so a sibling selector moves it out
+   of the way without any JS. */
+.sheet:not([hidden]) ~ .toast { top: 66px; bottom: auto; }

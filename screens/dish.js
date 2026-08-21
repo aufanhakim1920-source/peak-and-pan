@@ -84,11 +84,17 @@ screens.steps = function steps(id) {
              <span><span class="step__t">${esc(s.t)}</span>${s.hint ? `<span class="step__hint">${esc(s.hint)}</span>` : ""}</span>
            </button>`).join("")}
        </div>
-       <div style="height:18px"></div>
-       ${missing.length ? `<p style="font-size:12.5px;color:var(--primary);margin-bottom:12px">Still short ${missing.map((m) => esc(ingById(m)?.name || m)).join(", ")}. Read it now, cook it when you've shopped.</p>` : ""}
-       <button class="btn ${all && !missing.length ? "" : "btn--ink"}" data-dfinish="${d.id}" ${missing.length ? "disabled" : ""}>
-         ${missing.length ? "Missing ingredients" : all ? "Serve it to Glorb" : "Mark all done & serve"}
-       </button>
+       <div style="height:96px"></div>
+     </div>
+
+     <!-- sticky, because the finish button used to sit under five steps
+          and a missing-ingredient note, where it read as absent -->
+     <div class="cookbar">
+       ${missing.length
+         ? `<div class="cookbar__note">Short ${missing.map((m) => esc(ingById(m)?.name || m)).join(", ")}</div>
+            <button class="btn" data-go="#/ing/${missing[0]}">Go get ${esc(ingById(missing[0])?.name || missing[0])}</button>`
+         : `<div class="cookbar__note">${done.length}/${d.steps.length} steps${all ? " — plate it up" : ""}</div>
+            <button class="btn" data-dfinish="${d.id}">${all ? "Serve it to Glorb" : "Mark all done & serve"}</button>`}
      </div>` };
 };
 
