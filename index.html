@@ -93,10 +93,17 @@
   </div>
 
   <script src="config.js"></script>
-  <!-- Live Supabase keys live in config.local.js, which is gitignored.
-       Without it the app runs on the local driver — a 404 here is
-       expected on a fresh clone and harmless. Ask Aufan for the file. -->
-  <script src="config.local.js"></script>
+  <!-- config.local.js holds the live Supabase keys and is gitignored, so
+       it does not exist on GitHub Pages or on a fresh clone. Only reach
+       for it on localhost — otherwise the public demo would 404 looking
+       for a file that is deliberately not published. document.write is
+       used on purpose: it is synchronous, so PP_CONFIG is set before
+       db.js reads it. -->
+  <script>
+    if (["localhost", "127.0.0.1"].includes(location.hostname)) {
+      document.write('<scr' + 'ipt src="config.local.js"><\/scr' + 'ipt>');
+    }
+  </script>
   <script src="data.js"></script>
   <script src="story.js"></script>
   <script src="world.js"></script>

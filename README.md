@@ -1,4 +1,16 @@
-# Peak & Pan — v2 (rework)
+# Peak & Pan
+
+**Play it:** https://aufanhakim1920-source.github.io/peak-and-pan/
+**Code:** https://github.com/aufanhakim1920-source/peak-and-pan
+
+An alien octopus lands while you are cooking, threatens to eat you, tastes the
+food, and changes his mind. Now he will not leave until he has eaten the whole
+planet — one country at a time.
+
+The hosted demo saves to your own browser. It is the full app, not a mockup.
+
+---
+
 
 Built from the **team rocket** Figma (`GCaFeYthggBP5kXDfJJQf2`, page `39:2`), then reworked 2026-08-20.
 
@@ -77,7 +89,9 @@ You pointed me at `kevicebryan/pokemu` for the audio description, and it gave me
 
 Supabase project **`peak-and-pan`** (Sydney, free tier). Ratings, photos, replies and the artwork index are real — not local storage.
 
-**You need `config.local.js` to reach it.** It is gitignored, so a fresh clone runs on the local driver and everything still works; ask Aufan for the file. The key in it is the **publishable** key, which is designed to sit in a browser and is safe to send over chat. The **service_role** key is not, and belongs nowhere in this repo.
+**The keys are not in this repo and never will be.** `config.local.js` is gitignored and only loads on `localhost`, so the public demo and any fresh clone run on the local driver — every feature still works, the data just lives in that browser instead of being shared.
+
+The live database is Aufan's. Ask him for `config.local.js` if you need to point at it. The key in it is the **publishable** key, which is designed to sit in a browser and is safe to send over chat. The **service_role** key is not, and belongs nowhere in this repo.
 
 ### Pictures are not embedded
 
