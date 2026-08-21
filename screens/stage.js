@@ -71,6 +71,60 @@ function tentacleSVG(pts, colorHex) {
   </svg>`;
 }
 
+
+/* ---------------- the mission brief ----------------
+   The stage map showed you where you were but not what you needed —
+   you had to open a dish to find out you were short an ingredient.
+   This puts the objective, the ingredient tracker and one sensible
+   next action at the top of the screen. */
+function missionBrief(c, nodes) {
+  const now = nodes.find((n) => n.current);
+  if (!now) {
+    return `<div class="brief brief--done">
+      <span class="brief__k">Country cleared</span>
+      <h3>${esc(c.country)} is finished</h3>
+      <p>Glorb has eaten everything here. Open the globe for the next one.</p>
+      <button class="btn" data-go="#/globe">Pick the next country</button>
+    </div>`;
+  }
+
+  /* the dish this stretch of the map is building toward */
+  const target = c.dishes.map(dishById).filter(Boolean).find((d) => !Game.state.cooked.includes(d.id));
+  const missing = target ? Game.missing(target) : [];
+  const ready = target && missing.length === 0;
+
+  /* one action, chosen for whatever you are actually standing on */
+  let cta;
+  if (now.type === "prep")            cta = { label: `Pick up ${ingById(now.ing)?.name}`, act: `data-gather="${now.ing}"` };
+  else if (now.type === "cutscene")   cta = { label: "Read what happened", act: `data-node="${c.id}:${now.index}"` };
+  else if (now.type === "lesson")     cta = { label: `Learn ${dishById(now.dish)?.learn.toLowerCase()}`, act: `data-node="${c.id}:${now.index}"` };
+  else if (ready)                     cta = { label: `Cook ${dishById(now.dish)?.name}`, act: `data-go="#/steps/${now.dish}"` };
+  else                                cta = { label: "Read the recipe", act: `data-go="#/dish/${now.dish}"` };
+
+  return `<div class="brief">
+    <span class="brief__k">Now · stage ${now.index + 1} of ${nodes.length}</span>
+    <h3>${esc(now.type === "lesson" ? dishById(now.dish).learn : now.title)}</h3>
+    ${target ? `
+      <p class="brief__for">Building toward <b>${esc(target.name)}</b> — ${esc(target.blurb)}</p>
+      <div class="track">
+        ${target.needs.map((id) => {
+          const ing = ingById(id);
+          const have = Game.has(id);
+          return `<button class="tchip ${have ? "is-have" : ""}" data-go="#/ing/${id}">
+            <span class="tchip__i">${have ? "✓" : "+"}</span>${esc(ing ? ing.name : id)}
+          </button>`;
+        }).join("") || `<span class="track__none">No ingredients needed</span>`}
+      </div>
+      <p class="brief__state">${ready
+        ? "You have everything. Cook it."
+        : `Still need ${missing.map((m) => esc(ingById(m)?.name || m)).join(", ")}.`}</p>` : ""}
+    <div class="brief__acts">
+      <button class="btn" ${cta.act}>${esc(cta.label)}</button>
+      ${target ? `<button class="btn btn--ghost btn--sm" data-go="#/dish/${target.id}">How to cook</button>` : ""}
+    </div>
+  </div>`;
+}
+
 screens.stage = function stage(id) {
   const chId = id || (Game.current() || Game.chapters()[0]).id;
   const c = Game.chapter(chId);
@@ -98,6 +152,8 @@ screens.stage = function stage(id) {
            <span class="stagehead__chev">▾</span>
          </button>
        </div>
+
+       ${missionBrief(c, nodes)}
 
        <div class="stagemap">
          ${tentacleSVG(pts, hex)}

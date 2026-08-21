@@ -298,3 +298,56 @@
   background: var(--line);
 }
 .gchip.is-locked { opacity: 0.55; }
+
+/* ═══════════ mission brief ═══════════
+   Objective + ingredient tracker + one action, above the map. */
+.brief {
+  /* sticky, not static: the map auto-scrolls to your current node, which
+     used to carry the tracker off the top of the screen. A mission
+     tracker that scrolls away is not a tracker. */
+  position: sticky; top: 50px; z-index: 8;
+  margin: 12px 16px 4px; padding: 16px 18px 18px;
+  border-radius: 18px;
+  background: rgba(12, 8, 16, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.34);
+  color: var(--on-dark);
+}
+.brief__k {
+  display: block; font-family: var(--display); font-size: 10.5px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--accent);
+}
+.brief h3 {
+  font-family: var(--display); font-size: 22px; font-weight: 600;
+  letter-spacing: -0.02em; line-height: 1.1; margin-top: 3px;
+}
+.brief__for { font-size: 12.5px; line-height: 1.5; opacity: 0.8; margin-top: 7px; }
+.brief__for b { color: var(--accent); font-weight: 500; }
+.brief__state { font-size: 11.5px; opacity: 0.78; margin-top: 9px; }
+.brief__acts { display: flex; gap: 9px; margin-top: 14px; }
+.brief__acts .btn { flex: 1; }
+.brief__acts .btn--ghost { flex: none; }
+.brief--done { text-align: center; }
+.brief--done p { font-size: 13px; opacity: 0.8; margin: 6px 0 14px; }
+
+/* the ingredient tracker */
+.track { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+.tchip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; padding: 6px 12px 6px 7px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--on-dark);
+  transition: transform 0.16s var(--pop), background 0.18s;
+}
+.tchip:active { transform: scale(0.94); }
+.tchip__i {
+  width: 17px; height: 17px; border-radius: 50%; flex: none;
+  display: grid; place-items: center; font-size: 10px;
+  background: rgba(255, 255, 255, 0.18);
+}
+.tchip.is-have { background: rgba(249, 233, 90, 0.16); border-color: rgba(249, 233, 90, 0.5); }
+.tchip.is-have .tchip__i { background: var(--accent); color: #573451; }
+.track__none { font-size: 12px; opacity: 0.6; }
