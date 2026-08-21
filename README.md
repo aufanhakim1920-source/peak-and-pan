@@ -72,6 +72,27 @@ You pointed me at `kevicebryan/pokemu` for the audio description, and it gave me
 - **The globe** (`Atlas/GlobeCanvas.tsx`) — the lat/lng → sphere maths, marker model and timezone opening rotation. Written up in the vault as a reusable pattern.
 
 
+
+## Secrets — read this before you commit
+
+**Nothing in this repo is a secret, and it needs to stay that way.**
+
+| Thing | Where it lives | In git? |
+|---|---|---|
+| Gemini API key | Your browser's `localStorage`, typed into Profile → Assistant | **Never.** It is not written to any file |
+| Supabase URL + anon key | `config.local.js` (gitignored) | **No** — `config.js` ships empty and committed |
+| Supabase `service_role` key | Nowhere. Ever | **No.** It bypasses Row Level Security entirely |
+
+The Supabase **anon** key is public by design — it is meant to sit in a browser, and RLS is what protects the data. The **service_role** key is the opposite: it ignores every policy. Never put it in a browser file.
+
+Before pushing, this is worth thirty seconds:
+
+```bash
+git log -p --all | grep -nE "AIza[0-9A-Za-z_-]{15,}|sk-[A-Za-z0-9]{20,}|ghp_|eyJhbGciOi|-----BEGIN"
+```
+
+Silence means clean. **If something ever does get committed, rotate the key first** — deleting the commit does not un-leak it, because the push already happened.
+
 ## Working on this together
 
 **One file per page.** Two people can edit different screens without touching the same file.

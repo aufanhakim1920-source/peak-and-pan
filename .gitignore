@@ -1,5 +1,17 @@
-# vendor/ is deliberately committed — three.js is vendored so the globe
-# works with no internet and teammates need no install step.
+# ── never commit real credentials ──────────────────────────────
+# config.js ships with EMPTY values on purpose. If you fill in real
+# Supabase details, put them in config.local.js instead and uncomment
+# its <script> line in index.html — that file is ignored here.
+config.local.js
+.env
+.env.*
+*.pem
+*.key
+secrets.*
+
+# vendor/ IS committed on purpose — three.js is vendored so the globe
+# works offline and nobody needs an install step.
+
 .DS_Store
 Thumbs.db
 node_modules/
