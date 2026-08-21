@@ -183,7 +183,9 @@ function foilCard(d, opts) {
       <div class="fcard__face">
         <span class="fcard__pat" style="background-image:url(assets/patterns/${d.chapter}.svg)"></span>
         <span class="fcard__top">${flagOf(c)}<span class="fcard__diff">${stars}</span></span>
-        <span class="fcard__art">${cooked ? "🍽" : ready ? "🍄" : "🧺"}</span>
+        <span class="fcard__art">${DB.media("dish", d.id)
+          ? `<img class="fcard__photo" src="${DB.media("dish", d.id)}" alt="" loading="lazy">`
+          : cooked ? "🍽" : ready ? "🍄" : "🧺"}</span>
         <span class="fcard__name">${esc(d.name)}</span>
         <span class="fcard__learn">Teaches - ${esc(d.learn)}</span>
         ${cooked ? `<span class="fcard__seal" aria-hidden="true">EATEN</span>` : ""}
